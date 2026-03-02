@@ -30,8 +30,8 @@ jobs:
               with:
                   workspaces: "./src-tauri -> target"
 
-            - name: Run Formatter
-              run: cargo fmt
+            - name: Check formatting
+              run: cargo fmt -- --check
 
-            - name: Check Clippy
-              run: cargo clippy --fix
+            - name: Run Clippy
+              run: cargo clippy -- -D warnings

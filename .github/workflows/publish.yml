@@ -54,10 +54,6 @@ jobs:
               with:
                   workspaces: "./src-tauri -> target"
 
-            - name: install frontend dependencies
-              # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
-              run: bun install # change this to npm or pnpm depending on which one you use.
-
             - uses: tauri-apps/tauri-action@v0
               env:
                   GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }} # This is a valid Secret, Github doesn't allow to name start with GITHUB
