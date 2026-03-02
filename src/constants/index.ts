@@ -1,1 +1,1 @@
-export const APP_NAME = 'CrabLedger';
+export const APP_NAME = 'Crab Ledger';
