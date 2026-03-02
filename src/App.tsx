@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
+import { ModeToggle } from './components/ModeToggle';
 
 function App() {
 	const [greetMsg, setGreetMsg] = useState('');
@@ -13,10 +14,11 @@ function App() {
 	}
 
 	return (
-		<main className="container">
+		<main className="container h-full w-full bg-blue-400">
 			<h1 className="text-3xl font-bold underline text-blue-500">
 				Welcome to Tauri + React
 			</h1>
+			<ModeToggle />
 
 			<form
 				className="flex flex-row mt-4 gap-3 justify-center items-start"
