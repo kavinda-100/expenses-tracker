@@ -17,6 +17,7 @@ import {
 	FolderOpen,
 	Settings,
 } from 'lucide-react';
+import { APP_NAME } from '@/constants';
 
 export function AppSidebar() {
 	const year = new Date().getFullYear();
@@ -25,7 +26,7 @@ export function AppSidebar() {
 			<SidebarHeader className="border-b p-4 h-14">
 				<div className="flex items-center gap-2">
 					<Wallet className="h-6 w-6 text-primary" />
-					<h2 className="text-lg font-semibold">Expense Tracker</h2>
+					<h2 className="text-lg font-semibold">{APP_NAME}</h2>
 				</div>
 			</SidebarHeader>
 			<SidebarContent className="p-2">
@@ -113,7 +114,7 @@ export function AppSidebar() {
 			</SidebarContent>
 			<SidebarFooter className="border-t p-4">
 				<p className="text-xs text-muted-foreground">
-					© {year} Expense Tracker
+					© {year} {APP_NAME}
 				</p>
 			</SidebarFooter>
 		</Sidebar>
