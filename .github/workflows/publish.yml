@@ -8,6 +8,7 @@ on:
 
 jobs:
     publish-tauri:
+        name: Publish Tauri App
         permissions:
             contents: write
         strategy:
