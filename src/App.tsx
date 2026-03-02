@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
 import { invoke } from '@tauri-apps/api/core';
-import './App.css';
+import { Button } from './components/ui/button';
 
 function App() {
 	const [greetMsg, setGreetMsg] = useState('');
@@ -14,34 +13,9 @@ function App() {
 
 	return (
 		<main className="container">
-			<h1 className="text-3xl font-bold text-blue-500">
+			<h1 className="text-3xl font-bold underline text-blue-500">
 				Welcome to Tauri + React
 			</h1>
-
-			<div className="row">
-				<a href="https://vite.dev" target="_blank">
-					<img
-						src="/vite.svg"
-						className="logo vite"
-						alt="Vite logo"
-					/>
-				</a>
-				<a href="https://tauri.app" target="_blank">
-					<img
-						src="/tauri.svg"
-						className="logo tauri"
-						alt="Tauri logo"
-					/>
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img
-						src={reactLogo}
-						className="logo react"
-						alt="React logo"
-					/>
-				</a>
-			</div>
-			<p>Click on the Tauri, Vite, and React logos to learn more.</p>
 
 			<form
 				className="row"
@@ -55,7 +29,14 @@ function App() {
 					onChange={(e) => setName(e.currentTarget.value)}
 					placeholder="Enter a name..."
 				/>
-				<button type="submit">Greet</button>
+				<Button
+					variant="default"
+					className="mt-4"
+					onClick={greet}
+					type="submit"
+				>
+					Greet
+				</Button>
 			</form>
 			<p>{greetMsg}</p>
 		</main>
