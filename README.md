@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="src-tauri/icons/icon.png" alt="Expenses Tracker Logo" width="120" height="120">
+  <img src="src-tauri/icons/icon.png" alt="CrabLedger Logo" width="120" height="120">
   
-  # 💰 Expenses Tracker
+  # 💰 CrabLedger
   
   **A modern, cross-platform desktop application for managing your personal finances**
   
@@ -147,27 +147,27 @@ Tauri generates multiple package formats for broad Linux compatibility.
 
 ```bash
 # Install
-sudo dpkg -i src-tauri/target/release/bundle/deb/expenses-tracker_0.1.0_amd64.deb
+sudo dpkg -i src-tauri/target/release/bundle/deb/crab-ledger_0.1.0_amd64.deb
 
 # Fix dependency issues (if any)
 sudo apt-get install -f
 
 # Uninstall
-sudo apt remove expenses-tracker
+sudo apt remove crab-ledger
 # or
-sudo dpkg -r expenses-tracker
+sudo dpkg -r crab-ledger
 ```
 
 #### **Red Hat/Fedora (.rpm)**
 
 ```bash
 # Install
-sudo rpm -i src-tauri/target/release/bundle/rpm/expenses-tracker-0.1.0-1.x86_64.rpm
+sudo rpm -i src-tauri/target/release/bundle/rpm/crab-ledger-0.1.0-1.x86_64.rpm
 
 # Uninstall
-sudo rpm -e expenses-tracker
+sudo rpm -e crab-ledger
 # or
-sudo dnf remove expenses-tracker
+sudo dnf remove crab-ledger
 ```
 
 #### **Universal Linux (.AppImage)**
@@ -179,10 +179,10 @@ No installation required! Just make it executable and run:
 cd src-tauri/target/release/bundle/appimage/
 
 # Make executable
-chmod +x expenses-tracker_0.1.0_amd64.AppImage
+chmod +x crab-ledger_0.1.0_amd64.AppImage
 
 # Run directly
-./expenses-tracker_0.1.0_amd64.AppImage
+./crab-ledger_0.1.0_amd64.AppImage
 ```
 
 **✅ AppImage Advantages:**
@@ -195,7 +195,7 @@ chmod +x expenses-tracker_0.1.0_amd64.AppImage
 **Remove:**
 
 ```bash
-rm expenses-tracker_0.1.0_amd64.AppImage
+rm crab-ledger_0.1.0_amd64.AppImage
 ```
 
 ---
@@ -206,14 +206,14 @@ Find the `.msi` installer in `src-tauri/target/release/bundle/msi/`
 
 **Install:**
 
-1. Double-click `expenses-tracker_0.1.0_x64_en-US.msi`
+1. Double-click `CrabLedger_0.1.0_x64_en-US.msi`
 2. Follow the installation wizard
 3. Launch from Start Menu or Desktop shortcut
 
 **Uninstall:**
 
 1. Open **Settings** → **Apps** → **Installed apps**
-2. Find "Expenses Tracker"
+2. Find "CrabLedger"
 3. Click the three dots (⋮) → **Uninstall**
 
 ---
@@ -224,14 +224,14 @@ Find the `.dmg` file in `src-tauri/target/release/bundle/dmg/`
 
 **Install:**
 
-1. Double-click `expenses-tracker_0.1.0_universal.dmg`
+1. Double-click `CrabLedger_0.1.0_universal.dmg`
 2. Drag the app icon to the **Applications** folder
 3. Launch from Applications or Spotlight
 
 **Uninstall:**
 
 1. Open **Finder** → **Applications**
-2. Drag "Expenses Tracker" to **Trash**
+2. Drag "CrabLedger" to **Trash**
 3. Empty Trash
 
 > **Note:** On first launch, you may need to right-click the app and select "Open" if macOS shows a security warning.

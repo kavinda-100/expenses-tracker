@@ -12,7 +12,7 @@ export default function MainLayout() {
 						<SidebarTrigger className="mr-2" />
 					</div>
 				</div>
-				<div className="container mx-auto p-6">
+				<div className="px-6 py-3">
 					<Outlet />
 				</div>
 			</main>
