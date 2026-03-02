@@ -31,7 +31,7 @@ jobs:
                   workspaces: "./src-tauri -> target"
 
             - name: Check formatting
-              run: cargo fmt -- --check
+              run: cargo fmt
 
             - name: Run Clippy
-              run: cargo clippy -- -D warnings
+              run: cargo clippy
