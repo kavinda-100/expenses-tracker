@@ -1,0 +1,1 @@
+// @ts-expect-error process is a nodejs global - from vite.config.ts --- IGNORE ---
