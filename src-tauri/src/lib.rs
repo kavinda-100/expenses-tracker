@@ -16,7 +16,10 @@ pub fn run() {
             if let Some(window) = app.get_webview_window("main") {
                 use tauri::{PhysicalSize, Size};
                 // Use physical pixels for more reliable constraints
-                let min_size = Size::Physical(PhysicalSize { width: 1000, height: 700 });
+                let min_size = Size::Physical(PhysicalSize {
+                    width: 1000,
+                    height: 700,
+                });
                 let _ = window.set_min_size(Some(min_size));
             }
             Ok(())
