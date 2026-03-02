@@ -1,0 +1,37 @@
+name: Rust Lint and Format
+
+on:
+    push:
+        branches: [main, develop]
+        paths:
+            - 'src-tauri/**'
+    pull_request:
+        branches: [main, develop]
+        paths:
+            - 'src-tauri/**'
+
+jobs:
+    lint-and-format:
+        name: Lint and Format Rust
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: ./src-tauri
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install Rust stable
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Rust cache
+              uses: swatinem/rust-cache@v2
+              with:
+                  workspaces: './src-tauri -> target'
+
+            - name: Run Formatter
+              run: cargo fmt
+
+            - name: Check Clippy
+              run: cargo clippy --fix
