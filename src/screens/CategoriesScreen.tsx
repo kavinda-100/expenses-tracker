@@ -1,5 +1,5 @@
 const CategoriesScreen = () => {
-	return <div>CategoriesScreen</div>;
+    return <div>CategoriesScreen</div>;
 };
 
 export default CategoriesScreen;

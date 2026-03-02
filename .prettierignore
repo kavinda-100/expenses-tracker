@@ -1,0 +1,10 @@
+build
+coverage
+node_modules
+.next
+dist
+out
+*.log
+*.lock
+*.tsbuildinfo
+src-tauri/*

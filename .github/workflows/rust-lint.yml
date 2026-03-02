@@ -4,11 +4,11 @@ on:
     push:
         branches: [main, develop]
         paths:
-            - 'src-tauri/**'
+            - "src-tauri/**"
     pull_request:
         branches: [main, develop]
         paths:
-            - 'src-tauri/**'
+            - "src-tauri/**"
 
 jobs:
     lint-and-format:
@@ -28,7 +28,7 @@ jobs:
             - name: Rust cache
               uses: swatinem/rust-cache@v2
               with:
-                  workspaces: './src-tauri -> target'
+                  workspaces: "./src-tauri -> target"
 
             - name: Run Formatter
               run: cargo fmt

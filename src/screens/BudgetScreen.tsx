@@ -1,5 +1,5 @@
 const BudgetScreen = () => {
-	return <div>BudgetScreen</div>;
+    return <div>BudgetScreen</div>;
 };
 
 export default BudgetScreen;

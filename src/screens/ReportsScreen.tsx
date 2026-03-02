@@ -1,5 +1,5 @@
 const ReportsScreen = () => {
-	return <div>ReportsScreen</div>;
+    return <div>ReportsScreen</div>;
 };
 
 export default ReportsScreen;

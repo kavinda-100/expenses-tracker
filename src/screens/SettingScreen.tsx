@@ -1,11 +1,11 @@
-import { ModeToggle } from '@/components/ModeToggle';
+import { ModeToggle } from "@/components/ModeToggle";
 
 const SettingScreen = () => {
-	return (
-		<div>
-			SettingScreen <ModeToggle />
-		</div>
-	);
+    return (
+        <div>
+            SettingScreen <ModeToggle />
+        </div>
+    );
 };
 
 export default SettingScreen;

@@ -166,46 +166,46 @@ pub fn run() {
 - React Frontend Component
 
 ```tsx
-import { useEffect } from 'react';
-import { useTauriQuery } from './hooks/useTauriQuery';
+import { useEffect } from "react";
+import { useTauriQuery } from "./hooks/useTauriQuery";
 
 function SystemMonitor() {
-	const { data, error, loading, isRefetching, queryAsync, refetch } =
-		useTauriQuery<string, string>();
+    const { data, error, loading, isRefetching, queryAsync, refetch } =
+        useTauriQuery<string, string>();
 
-	useEffect(() => {
-		// Run initial health check on mount
-		queryAsync('check_system_health');
-	}, []);
+    useEffect(() => {
+        // Run initial health check on mount
+        queryAsync("check_system_health");
+    }, []);
 
-	return (
-		<div className="monitor">
-			<h2>System Health Monitor</h2>
+    return (
+        <div className="monitor">
+            <h2>System Health Monitor</h2>
 
-			{/* Loading State */}
-			{loading && !isRefetching && (
-				<div className="spinner">Checking system health...</div>
-			)}
+            {/* Loading State */}
+            {loading && !isRefetching && (
+                <div className="spinner">Checking system health...</div>
+            )}
 
-			{/* Refetching State */}
-			{isRefetching && <div className="badge">Refreshing status...</div>}
+            {/* Refetching State */}
+            {isRefetching && <div className="badge">Refreshing status...</div>}
 
-			{/* Error State */}
-			{error && <div className="alert alert-error">❌ {error}</div>}
+            {/* Error State */}
+            {error && <div className="alert alert-error">❌ {error}</div>}
 
-			{/* Success State */}
-			{data && <div className="alert alert-success">✅ {data}</div>}
+            {/* Success State */}
+            {data && <div className="alert alert-success">✅ {data}</div>}
 
-			{/* Actions */}
-			<button
-				onClick={refetch}
-				disabled={loading}
-				className="btn-primary"
-			>
-				{loading ? 'Checking...' : 'Recheck Status'}
-			</button>
-		</div>
-	);
+            {/* Actions */}
+            <button
+                onClick={refetch}
+                disabled={loading}
+                className="btn-primary"
+            >
+                {loading ? "Checking..." : "Recheck Status"}
+            </button>
+        </div>
+    );
 }
 
 export default SystemMonitor;
