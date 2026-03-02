@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Button } from './components/ui/button';
+import { Input } from './components/ui/input';
 
 function App() {
 	const [greetMsg, setGreetMsg] = useState('');
@@ -18,23 +19,18 @@ function App() {
 			</h1>
 
 			<form
-				className="row"
+				className="flex flex-row mt-4 gap-3 justify-center items-start"
 				onSubmit={(e) => {
 					e.preventDefault();
 					greet();
 				}}
 			>
-				<input
-					id="greet-input"
+				<Input
 					onChange={(e) => setName(e.currentTarget.value)}
 					placeholder="Enter a name..."
+					className="w-75"
 				/>
-				<Button
-					variant="default"
-					className="mt-4"
-					onClick={greet}
-					type="submit"
-				>
+				<Button variant="default" onClick={greet} type="submit">
 					Greet
 				</Button>
 			</form>
