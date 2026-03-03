@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize, de};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CategoryResponseDto {
@@ -60,6 +60,13 @@ pub struct ExpenseByCategoryResponseDto {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MonthlyOverviewResponseDto {
+    pub month: u8,
+    pub total_income: f64,
+    pub total_expenses: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct YearlyOverviewResponseDto {
     pub month: u8,
     pub total_income: f64,
     pub total_expenses: f64,

@@ -4,7 +4,7 @@ use crate::{
     controllers::{
         budget_controller::{add_budget, delete_budget, get_budgets, update_budget}, category_controller::{add_category, delete_category, get_all_categories}, dashboard_controller::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
-        }, report_controller::{get_expense_by_category, get_monthly_overview}, transaction_controller::{
+        }, report_controller::{get_expense_by_category, get_monthly_overview, get_yearly_overview}, transaction_controller::{
             add_transaction, delete_transaction, get_all_transactions_with_category,
         }
     },
@@ -60,7 +60,8 @@ pub fn run() {
             get_past_seven_days_data,
             get_recent_transactions,
             get_expense_by_category,
-            get_monthly_overview
+            get_monthly_overview,
+            get_yearly_overview
         ])
         .setup(|app| {
             // Set minimum window size constraints

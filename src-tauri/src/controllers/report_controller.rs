@@ -1,8 +1,8 @@
 use rusqlite::{Connection, Result};
 
 use crate::constants::DB_FILE_NAME;
-use crate::dtos::response_dtos::{ExpenseByCategoryResponseDto, MonthlyOverviewResponseDto};
-use crate::dtos::request_dtos::MonthlyOverviewRequestDto;
+use crate::dtos::response_dtos::{ExpenseByCategoryResponseDto, MonthlyOverviewResponseDto, YearlyOverviewResponseDto};
+use crate::dtos::request_dtos::{    MonthlyOverviewRequestDto, YearlyOverviewRequestDto};
 
 /**
  * Get total expenses grouped by category
@@ -84,4 +84,50 @@ pub fn get_monthly_overview(request: MonthlyOverviewRequestDto) -> Result<Monthl
 
     // Return the monthly overview data
     Ok(overview)
+}
+
+/**
+ * Get the Overview of total income, total expenses, for every month in a given year
+ * @param YearlyOverviewRequestDto - year for which the overview is requested
+ * @return Result<Vec<YearlyOverviewResponseDto>, String> - Ok(Vec<YearlyOverviewResponseDto>) if the data was retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_yearly_overview(request: YearlyOverviewRequestDto) -> Result<Vec<YearlyOverviewResponseDto>, String> {
+    // Open database connection and query for total income and expenses
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query total income and expenses for each month in the specified year
+    let mut stmt = conn
+        .prepare(
+            "SELECT 
+                strftime('%m', date) as month,
+                IFNULL(SUM(CASE WHEN type = 'INCOME' THEN amount END), 0) as total_income,
+                IFNULL(SUM(CASE WHEN type = 'EXPENSE' THEN amount END), 0) as total_expenses
+            FROM transactions
+            WHERE strftime('%Y', date) = ?1
+            GROUP BY month
+            ORDER BY month",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query with the provided year parameter and map results to YearlyOverviewResponseDto structs
+    let yearly_overview_iter = stmt
+        .query_map([request.year.to_string()], |row| {
+            Ok(YearlyOverviewResponseDto {
+                month: row.get::<_, String>(0)?.parse::<u8>().unwrap_or(0),
+                total_income: row.get(1)?,
+                total_expenses: row.get(2)?
+            })
+        })
+        .map_err(|e| format!("Failed to query yearly overview: {}", e))?;
+
+    // Collect the results into a vector, handling any mapping errors
+    let yearly_overview: Vec<YearlyOverviewResponseDto> = yearly_overview_iter
+        .collect::<Result<Vec<YearlyOverviewResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to collect yearly overview: {}", e))?;
+
+    // Return the yearly overview data
+    Ok(yearly_overview)
 }

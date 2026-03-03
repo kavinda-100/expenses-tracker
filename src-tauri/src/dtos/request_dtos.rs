@@ -40,3 +40,9 @@ pub struct MonthlyOverviewRequestDto {
     pub month: u8, // 1-12
     pub year: i32,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct YearlyOverviewRequestDto {
+    pub year: i32,
+}
+
