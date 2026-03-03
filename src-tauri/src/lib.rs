@@ -1,6 +1,7 @@
 use tauri::Manager;
 
 mod database;
+mod dtos;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]

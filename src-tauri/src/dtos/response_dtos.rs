@@ -1,0 +1,31 @@
+#[derive(Debug, Clone)]
+#[allow(dead_code)]
+pub struct CategoryResponseDto {
+    pub id: i64,
+    pub name: String,
+    pub type_: String, // "INCOME" or "EXPENSE"
+    pub created_at: String, // ISO 8601 format
+}
+
+#[derive(Debug, Clone)]
+#[allow(dead_code)]
+pub struct TransactionResponseDto {
+    pub id: i64,
+    pub amount: f64,
+    pub description: Option<String>,
+    pub date: String, // ISO 8601 format
+    pub type_: String, // "INCOME" or "EXPENSE"
+    pub category_id: i64,
+    pub created_at: String, // ISO 8601 format
+}
+
+#[derive(Debug, Clone)]
+#[allow(dead_code)]
+pub struct BudgetResponseDto {
+    pub id: i64,
+    pub amount: f64,
+    pub month: u8, // 1-12
+    pub year: i32,
+    pub category_id: i64,
+    pub created_at: String, // ISO 8601 format
+}
