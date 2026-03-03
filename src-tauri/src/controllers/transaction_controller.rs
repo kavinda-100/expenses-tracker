@@ -1,6 +1,11 @@
 use rusqlite::{params, Connection};
 
-use crate::{constants::DB_FILE_NAME, dtos::{request_dtos::TransactionRequestDto, response_dtos::TransactionWithCategoryResponseDto}};
+use crate::{
+    constants::DB_FILE_NAME,
+    dtos::{
+        request_dtos::TransactionRequestDto, response_dtos::TransactionWithCategoryResponseDto,
+    },
+};
 
 /**
  * Add a new transaction to the database
@@ -41,8 +46,10 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
     )
     .map_err(|e| format!("Failed to add transaction: {}", e))?;
 
+    // Get the ID of the newly inserted transaction
     let last_id = conn.last_insert_rowid();
 
+    // Return a success message with the new transaction ID
     Ok(format!(
         "Transaction added successfully with id: {}",
         last_id
@@ -61,6 +68,7 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
     let conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
 
+    // Execute the delete statement and check how many rows were affected
     let rows_affected = conn
         .execute(
             "DELETE FROM transactions WHERE id = ?1",
@@ -68,6 +76,7 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
         )
         .map_err(|e| format!("Failed to delete transaction: {}", e))?;
 
+    // If no rows were affected, it means the transaction with the given ID was not found
     if rows_affected == 0 {
         Err(format!("No transaction found with id: {}", transaction_id))
     } else {
@@ -105,6 +114,7 @@ pub fn get_all_transactions_with_category(
         )
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
+    // Execute the query and map the results to TransactionWithCategoryResponseDto structs
     let transaction_iter = stmt
         .query_map(params![start_date, end_date], |row| {
             Ok(TransactionWithCategoryResponseDto {
@@ -120,6 +130,7 @@ pub fn get_all_transactions_with_category(
         })
         .map_err(|e| format!("Failed to query transactions: {}", e))?;
 
+    // Collect the results into a vector, handling any mapping errors
     let transactions_with_category = transaction_iter
         .collect::<Result<Vec<TransactionWithCategoryResponseDto>, rusqlite::Error>>()
         .map_err(|e| format!("Failed to collect transactions: {}", e))?;
