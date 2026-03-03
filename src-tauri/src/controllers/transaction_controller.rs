@@ -1,7 +1,13 @@
 use rusqlite::{params, Connection};
 
-use crate::{constants::DB_FILE_NAME, dtos::request_dtos::TransactionRequestDto};
+use crate::{constants::DB_FILE_NAME, dtos::{request_dtos::TransactionRequestDto, response_dtos::TransactionWithCategoryResponseDto}};
 
+/**
+ * Add a new transaction to the database
+ * @param new_transaction - The transaction data to be added, represented as a TransactionRequestDto
+ * @return Result<String, String> - Ok(String) if the transaction was added successfully,
+ * otherwise an error message is returned as a String
+ */
 #[tauri::command]
 pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String, String> {
     // Destructure the TransactionRequestDto to get the individual fields
@@ -43,6 +49,12 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
     ))
 }
 
+/**
+ * Delete a transaction from the database by its ID
+ * @param transaction_id - The ID of the transaction to be deleted
+ * @return Result<String, String> - Ok(String) if the transaction was deleted successfully,
+ * otherwise an error message is returned as a String
+ */
 #[tauri::command]
 pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
     // Open database connection and delete transaction
@@ -64,4 +76,53 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
             transaction_id
         ))
     }
+}
+
+/**
+ * Get all transactions from the database in a specific date range with category information
+ * @param start_date - The start date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-01")
+ * @param end_date - The end date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-31")
+ * @return Result<Vec<TransactionWithCategory>, String> - Ok(Vec<TransactionWithCategory>) if the transactions were retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_all_transactions_with_category(
+    start_date: String,
+    end_date: String,
+) -> Result<Vec<TransactionWithCategoryResponseDto>, String> {
+    // Open database connection
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query to get transactions with category information in the specified date range
+    let mut stmt = conn
+        .prepare(
+            "SELECT t.id, t.amount, t.description, t.date, t.type, c.id AS category_id, c.name AS category_name, t.created_at
+             FROM transactions t
+             JOIN categories c ON t.category_id = c.id
+             WHERE date(t.date) BETWEEN date(?1) AND date(?2)
+             ORDER BY date(t.date) DESC;",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let transaction_iter = stmt
+        .query_map(params![start_date, end_date], |row| {
+            Ok(TransactionWithCategoryResponseDto {
+                id: row.get(0)?,
+                amount: row.get(1)?,
+                description: row.get(2)?,
+                date: row.get(3)?,
+                type_: row.get(4)?,
+                category_id: row.get(5)?,
+                category_name: row.get(6)?,
+                created_at: row.get(7)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query transactions: {}", e))?;
+
+    let transactions_with_category = transaction_iter
+        .collect::<Result<Vec<TransactionWithCategoryResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to collect transactions: {}", e))?;
+
+    Ok(transactions_with_category)
 }

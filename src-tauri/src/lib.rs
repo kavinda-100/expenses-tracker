@@ -4,7 +4,7 @@ use crate::{
     controllers::{
         budget_controller::{add_budget, delete_budget},
         category_controller::{add_category, delete_category},
-        transaction_controller::{add_transaction, delete_transaction},
+        transaction_controller::{add_transaction, delete_transaction, get_all_transactions_with_category},
     },
     database::migrations::{connect_to_db, run_migrations},
 };
@@ -48,6 +48,7 @@ pub fn run() {
             delete_category,
             add_transaction,
             delete_transaction,
+            get_all_transactions_with_category,
             add_budget,
             delete_budget
         ])
