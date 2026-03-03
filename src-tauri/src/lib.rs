@@ -2,14 +2,11 @@ use tauri::Manager;
 
 use crate::{
     controllers::{
-        budget_controller::{add_budget, delete_budget, get_budgets, update_budget},
-        category_controller::{add_category, delete_category, get_all_categories},
-        dashboard_controller::{
+        budget_controller::{add_budget, delete_budget, get_budgets, update_budget}, category_controller::{add_category, delete_category, get_all_categories}, dashboard_controller::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
-        },
-        transaction_controller::{
+        }, report_controller::get_expense_by_category, transaction_controller::{
             add_transaction, delete_transaction, get_all_transactions_with_category,
-        },
+        }
     },
     database::migrations::{connect_to_db, run_migrations},
 };
@@ -61,7 +58,8 @@ pub fn run() {
             update_budget,
             get_dashboard_overview,
             get_past_seven_days_data,
-            get_recent_transactions
+            get_recent_transactions,
+            get_expense_by_category
         ])
         .setup(|app| {
             // Set minimum window size constraints

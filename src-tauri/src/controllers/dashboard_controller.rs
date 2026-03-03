@@ -98,7 +98,9 @@ pub fn get_past_seven_days_data() -> Result<Vec<PastSevenDaysDataResponseDto>, S
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn get_recent_transactions(limit: Option<u8>) -> Result<Vec<RecentTransactionsResponseDto>, String> {
+pub fn get_recent_transactions(
+    limit: Option<u8>,
+) -> Result<Vec<RecentTransactionsResponseDto>, String> {
     // Default to 5 transactions if no limit is provided
     let limit = match limit {
         Some(v) => v,
