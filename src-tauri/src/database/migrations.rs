@@ -23,7 +23,6 @@ pub fn connect_to_db() -> Result<Connection, String> {
     }
 }
 
-
 /**
  * Create all migrations for the database schema
  * @param conn - The database connection
