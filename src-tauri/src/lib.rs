@@ -1,6 +1,6 @@
 use tauri::Manager;
 
-use crate::controllers::category_controller::add_category;
+use crate::{controllers::category_controller::add_category, database::migrations::{connect_to_db, run_migrations}};
 
 mod controllers;
 mod database;
@@ -14,6 +14,23 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // connect to the database when the application starts
+    let connection = match connect_to_db() {
+        Ok(conn) => conn,
+        Err(e) => {
+            eprintln!("Error connecting to the database: {}", e);
+            panic!("Failed to connect to the database.");
+        }
+    };
+
+    // run migrations to ensure the database schema is up to date
+    match run_migrations(&connection) {
+        Ok(_) => println!("Migrations ran successfully."),
+        Err(e) => {
+            eprintln!("Error running migrations: {}", e);
+            panic!("Failed to run database migrations.");
+        }
+    }
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
