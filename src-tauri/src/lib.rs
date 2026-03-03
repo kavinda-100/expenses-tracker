@@ -1,5 +1,7 @@
 use tauri::Manager;
 
+mod database;
+
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -8,7 +10,15 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Get the migrations from the database module
+    let migrations = database::migrations::get_migrations();
+
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:crabledger.db", migrations)
+                .build(),
+        )
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![greet])
         .setup(|app| {
