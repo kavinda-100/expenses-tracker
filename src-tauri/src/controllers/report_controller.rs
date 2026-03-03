@@ -1,13 +1,13 @@
 use rusqlite::{Connection, Result};
 
 use crate::constants::DB_FILE_NAME;
-use crate::dtos::response_dtos::{
-    ExpenseByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto,
-    MonthlyOverviewResponseDto, YearlyOverviewResponseDto,
-};
 use crate::dtos::request_dtos::{
     LastMonthHabitsRequestDto, LastYearHabitsRequestDto, MonthlyOverviewRequestDto,
     YearlyOverviewRequestDto,
+};
+use crate::dtos::response_dtos::{
+    ExpenseByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto,
+    MonthlyOverviewResponseDto, YearlyOverviewResponseDto,
 };
 
 /**
@@ -57,8 +57,9 @@ pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, St
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn get_monthly_overview(request: MonthlyOverviewRequestDto) -> Result<MonthlyOverviewResponseDto, String> {
-
+pub fn get_monthly_overview(
+    request: MonthlyOverviewRequestDto,
+) -> Result<MonthlyOverviewResponseDto, String> {
     // Open database connection and query for total income and expenses
     let conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
@@ -82,7 +83,7 @@ pub fn get_monthly_overview(request: MonthlyOverviewRequestDto) -> Result<Monthl
                 Ok(MonthlyOverviewResponseDto {
                     month: request.month,
                     total_income: row.get(0)?,
-                    total_expenses: row.get(1)?
+                    total_expenses: row.get(1)?,
                 })
             },
         )
@@ -99,7 +100,9 @@ pub fn get_monthly_overview(request: MonthlyOverviewRequestDto) -> Result<Monthl
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn get_yearly_overview(request: YearlyOverviewRequestDto) -> Result<Vec<YearlyOverviewResponseDto>, String> {
+pub fn get_yearly_overview(
+    request: YearlyOverviewRequestDto,
+) -> Result<Vec<YearlyOverviewResponseDto>, String> {
     // Open database connection and query for total income and expenses
     let conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
@@ -124,7 +127,7 @@ pub fn get_yearly_overview(request: YearlyOverviewRequestDto) -> Result<Vec<Year
             Ok(YearlyOverviewResponseDto {
                 month: row.get::<_, String>(0)?.parse::<u8>().unwrap_or(0),
                 total_income: row.get(1)?,
-                total_expenses: row.get(2)?
+                total_expenses: row.get(2)?,
             })
         })
         .map_err(|e| format!("Failed to query yearly overview: {}", e))?;

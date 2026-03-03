@@ -56,4 +56,3 @@ pub struct LastMonthHabitsRequestDto {
 pub struct LastYearHabitsRequestDto {
     pub year: i32,
 }
-
