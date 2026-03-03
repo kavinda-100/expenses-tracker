@@ -53,7 +53,7 @@ fn insert_mock_data(conn: &Connection) -> Result<(), String> {
                 ('Salary', 'INCOME'),
                 ('Freelance', 'INCOME'),
                 ('SAAS', 'INCOME'),
-                ('Bonuses', 'INCOME')
+                ('Bonuses', 'INCOME'),
                 ('Investments', 'INCOME')
                 ",
         [],
@@ -102,7 +102,7 @@ fn insert_mock_data(conn: &Connection) -> Result<(), String> {
                 -- 2025 income
                 (5000.00, 'Monthly salary', '2025-01-30', 'INCOME', 6),
                 (5000.00, 'Monthly salary', '2025-02-28', 'INCOME', 6),
-                (1200.00, 'Freelance project', '2025-03-15', 'INCOME', 7)
+                (1200.00, 'Freelance project', '2025-03-15', 'INCOME', 7),
                 (300.00, 'SAAS subscription refund', '2025-04-20', 'INCOME', 8),
                 (500.00, 'Year-end bonus', '2025-12-25', 'INCOME', 9),
                 (200.00, 'Stock dividends', '2025-11-27', 'INCOME', 10)",

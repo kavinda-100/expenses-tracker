@@ -42,10 +42,8 @@ mod report_tests {
             "Should have at least 5 spending categories"
         );
 
-        println!("✅ February 2026 habits:");
-        for habit in &habits {
-            println!("  - {}: ${:.2}", habit.category_name, habit.total_amount);
-        }
+        // print the data for debugging
+        println!("✅ test_get_last_month_habits_february_2026 {:?}", habits);
 
         // Teardown
         teardown_test_db();
@@ -71,7 +69,8 @@ mod report_tests {
             "Should have no spending habits for December 2024"
         );
 
-        println!("✅ December 2024 has no spending data (as expected)");
+        // print the data for debugging
+        println!("test_get_last_month_habits_no_data {:?}", habits);
 
         // Teardown
         teardown_test_db();
@@ -110,6 +109,9 @@ mod report_tests {
             println!("  - {}: ${:.2}", habit.category_name, habit.total_amount);
         }
 
+        // print the data for debugging
+        println!("✅ test_get_last_year_habits_2025 {:?}", habits);
+
         // Teardown
         teardown_test_db();
     }
@@ -135,17 +137,15 @@ mod report_tests {
             .unwrap();
         assert_eq!(groceries.total_amount, 831.25);
 
-        // Utilities: Feb (200.00 + 100.00) = 300.00
+        // Utilities: Feb (200.00 + 100.00) + Jan (75.00 + 50.00) = 425.00
         let utilities = habits
             .iter()
             .find(|h| h.category_name == "Utilities")
             .unwrap();
-        assert_eq!(utilities.total_amount, 300.00);
+        assert_eq!(utilities.total_amount, 425.00);
 
-        println!("✅ 2026 (Year-to-date) habits:");
-        for habit in &habits {
-            println!("  - {}: ${:.2}", habit.category_name, habit.total_amount);
-        }
+        // print the data for debugging
+        println!("✅ test_get_last_year_habits_current_year_2026 {:?}", habits);
 
         // Teardown
         teardown_test_db();
@@ -166,6 +166,9 @@ mod report_tests {
         assert!(habits.is_empty(), "Should have no spending habits for 2020");
 
         println!("✅ 2020 has no spending data (as expected)");
+
+        // print the data for debugging
+        println!("test_get_last_year_habits_no_data {:?}", habits);
 
         // Teardown
         teardown_test_db();
