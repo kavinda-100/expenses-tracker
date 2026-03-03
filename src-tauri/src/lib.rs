@@ -1,6 +1,6 @@
 use tauri::Manager;
 
-use crate::{controllers::category_controller::add_category, database::migrations::{connect_to_db, run_migrations}};
+use crate::{controllers::category_controller::{add_category, delete_category}, database::migrations::{connect_to_db, run_migrations}};
 
 mod constants;
 mod controllers;
@@ -35,7 +35,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, add_category])
+        .invoke_handler(tauri::generate_handler![greet, add_category, delete_category])
         .setup(|app| {
             // Set minimum window size constraints
             if let Some(window) = app.get_webview_window("main") {
