@@ -71,3 +71,15 @@ pub struct YearlyOverviewResponseDto {
     pub total_income: f64,
     pub total_expenses: f64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastMonthHabitsResponseDto {
+    pub category_name: String,
+    pub total_amount: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastYearHabitsResponseDto {
+    pub category_name: String,
+    pub total_amount: f64,
+}

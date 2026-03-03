@@ -1,8 +1,14 @@
 use rusqlite::{Connection, Result};
 
 use crate::constants::DB_FILE_NAME;
-use crate::dtos::response_dtos::{ExpenseByCategoryResponseDto, MonthlyOverviewResponseDto, YearlyOverviewResponseDto};
-use crate::dtos::request_dtos::{    MonthlyOverviewRequestDto, YearlyOverviewRequestDto};
+use crate::dtos::response_dtos::{
+    ExpenseByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto,
+    MonthlyOverviewResponseDto, YearlyOverviewResponseDto,
+};
+use crate::dtos::request_dtos::{
+    LastMonthHabitsRequestDto, LastYearHabitsRequestDto, MonthlyOverviewRequestDto,
+    YearlyOverviewRequestDto,
+};
 
 /**
  * Get total expenses grouped by category
@@ -130,4 +136,104 @@ pub fn get_yearly_overview(request: YearlyOverviewRequestDto) -> Result<Vec<Year
 
     // Return the yearly overview data
     Ok(yearly_overview)
+}
+
+/**
+ * Get spending habits for a specific month - returns top expense categories
+ * @param LastMonthHabitsRequestDto - month (1-12) and year for which spending habits are requested
+ * @return Result<Vec<LastMonthHabitsResponseDto>, String> - Ok(Vec<LastMonthHabitsResponseDto>) if the data was retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_last_month_habits(
+    request: LastMonthHabitsRequestDto,
+) -> Result<Vec<LastMonthHabitsResponseDto>, String> {
+    // Open database connection
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query to get total expenses grouped by category for the specified month
+    let mut stmt = conn
+        .prepare(
+            "SELECT c.name, IFNULL(SUM(t.amount), 0) as total_amount
+            FROM categories c
+            LEFT JOIN transactions t ON c.id = t.category_id 
+                AND t.type = 'EXPENSE'
+                AND strftime('%m', t.date) = ?1 
+                AND strftime('%Y', t.date) = ?2
+            WHERE c.type = 'EXPENSE'
+            GROUP BY c.id, c.name
+            HAVING total_amount > 0
+            ORDER BY total_amount DESC",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query with the provided month and year parameters
+    let habits_iter = stmt
+        .query_map(
+            [format!("{:02}", request.month), request.year.to_string()],
+            |row| {
+                Ok(LastMonthHabitsResponseDto {
+                    category_name: row.get(0)?,
+                    total_amount: row.get(1)?,
+                })
+            },
+        )
+        .map_err(|e| format!("Failed to query last month habits: {}", e))?;
+
+    // Collect the results into a vector, handling any mapping errors
+    let habits: Vec<LastMonthHabitsResponseDto> = habits_iter
+        .collect::<Result<Vec<LastMonthHabitsResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to collect last month habits: {}", e))?;
+
+    // Return the spending habits data
+    Ok(habits)
+}
+
+/**
+ * Get spending habits for an entire year - returns top expense categories
+ * @param LastYearHabitsRequestDto - year for which spending habits are requested
+ * @return Result<Vec<LastYearHabitsResponseDto>, String> - Ok(Vec<LastYearHabitsResponseDto>) if the data was retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_last_year_habits(
+    request: LastYearHabitsRequestDto,
+) -> Result<Vec<LastYearHabitsResponseDto>, String> {
+    // Open database connection
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query to get total expenses grouped by category for the specified year
+    let mut stmt = conn
+        .prepare(
+            "SELECT c.name, IFNULL(SUM(t.amount), 0) as total_amount
+            FROM categories c
+            LEFT JOIN transactions t ON c.id = t.category_id 
+                AND t.type = 'EXPENSE'
+                AND strftime('%Y', t.date) = ?1
+            WHERE c.type = 'EXPENSE'
+            GROUP BY c.id, c.name
+            HAVING total_amount > 0
+            ORDER BY total_amount DESC",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query with the provided year parameter
+    let habits_iter = stmt
+        .query_map([request.year.to_string()], |row| {
+            Ok(LastYearHabitsResponseDto {
+                category_name: row.get(0)?,
+                total_amount: row.get(1)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query last year habits: {}", e))?;
+
+    // Collect the results into a vector, handling any mapping errors
+    let habits: Vec<LastYearHabitsResponseDto> = habits_iter
+        .collect::<Result<Vec<LastYearHabitsResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to collect last year habits: {}", e))?;
+
+    // Return the spending habits data
+    Ok(habits)
 }

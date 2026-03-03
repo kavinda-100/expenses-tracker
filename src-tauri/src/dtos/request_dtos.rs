@@ -46,3 +46,14 @@ pub struct YearlyOverviewRequestDto {
     pub year: i32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastMonthHabitsRequestDto {
+    pub month: u8, // 1-12
+    pub year: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastYearHabitsRequestDto {
+    pub year: i32,
+}
+
