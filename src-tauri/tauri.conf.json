@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schema.tauri.app/config/2",
-	"productName": "CrabLedger",
+	"productName": "Crab Ledger",
 	"version": "0.1.0",
 	"identifier": "com.kavinda.crab-ledger",
 	"build": {
@@ -13,7 +13,7 @@
 		"windows": [
 			{
 				"label": "main",
-				"title": "CrabLedger",
+				"title": "Crab Ledger",
 				"width": 1600,
 				"height": 800,
 				"minWidth": 1000,

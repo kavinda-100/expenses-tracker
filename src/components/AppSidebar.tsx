@@ -26,6 +26,7 @@ export function AppSidebar() {
             <SidebarHeader className="border-b p-4 h-14">
                 <div className="flex items-center gap-2">
                     <Wallet className="h-6 w-6 text-primary" />
+                    {/* <img src="/logo.png" alt="App Icon" className="h-10 w-10" /> */}
                     <h2 className="text-lg font-semibold">{APP_NAME}</h2>
                 </div>
             </SidebarHeader>
