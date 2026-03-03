@@ -2,6 +2,7 @@ use tauri::Manager;
 
 use crate::{
     controllers::{
+        budget_controller::{add_budget, delete_budget},
         category_controller::{add_category, delete_category},
         transaction_controller::{add_transaction, delete_transaction},
     },
@@ -46,7 +47,9 @@ pub fn run() {
             add_category,
             delete_category,
             add_transaction,
-            delete_transaction
+            delete_transaction,
+            add_budget,
+            delete_budget
         ])
         .setup(|app| {
             // Set minimum window size constraints
