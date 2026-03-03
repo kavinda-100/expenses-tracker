@@ -9,3 +9,7 @@
 - [x] Implement the backend logic for adding, deleting, and retrieving transactions.
 - [x] Implement the backend logic for adding, deleting, and retrieving categories.
 - [x] Implement the backend logic for adding, deleting, updating, and retrieving budgets.
+- [x] Implement the backend logic for retrieving dashboard overview data (total income, total expenses, net balance).
+- [x] Implement the backend logic for retrieving for last 7 days transactions for the dashboard (INCOME, EXPENSE).
+- [x] Implement the backend logic for retrieving for recent transactions for the dashboard with filters.
+- [ ] Implement the backend logic for report screens (daily, weekly, monthly, yearly).
