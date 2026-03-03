@@ -1,7 +1,10 @@
+use rusqlite::{params, Connection};
+
+use crate::constants::DB_FILE_NAME;
 use crate::dtos::request_dtos::CategoryRequestDto;
 
 #[tauri::command]
-pub async fn add_category(new_category: CategoryRequestDto) -> Result<String, String> {
+pub fn add_category(new_category: CategoryRequestDto) -> Result<String, String> {
     let CategoryRequestDto { name, type_ } = new_category;
 
     // Validate input
@@ -12,7 +15,17 @@ pub async fn add_category(new_category: CategoryRequestDto) -> Result<String, St
         return Err("Category type must be either 'INCOME' or 'EXPENSE'".to_string());
     }
 
-    // code soon.
+    // Open database connection and insert category
+    let conn = Connection::open(DB_FILE_NAME)
+        .map_err(|e| format!("Failed to open database: {}", e))?;
 
-    Ok(format!("Category added successfully with id:"))
+    conn.execute(
+        "INSERT INTO categories (name, type) VALUES (?1, ?2)",
+        params![name, type_],
+    )
+    .map_err(|e| format!("Failed to add category: {}", e))?;
+
+    let last_id = conn.last_insert_rowid();
+
+    Ok(format!("Category added successfully with id: {}", last_id))
 }

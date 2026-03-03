@@ -2,6 +2,7 @@ use tauri::Manager;
 
 use crate::{controllers::category_controller::add_category, database::migrations::{connect_to_db, run_migrations}};
 
+mod constants;
 mod controllers;
 mod database;
 mod dtos;
