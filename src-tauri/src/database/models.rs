@@ -1,4 +1,3 @@
-
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct Category {
@@ -11,7 +10,7 @@ pub struct Category {
 pub struct Transaction {
     pub amount: f64,
     pub description: Option<String>,
-    pub date: String, // ISO 8601 format
+    pub date: String,  // ISO 8601 format
     pub type_: String, // "INCOME" or "EXPENSE"
     pub category_id: i64,
 }

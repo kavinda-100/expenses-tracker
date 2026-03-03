@@ -1,5 +1,8 @@
 use tauri::Manager;
 
+use crate::controllers::category_controller::add_category;
+
+mod controllers;
 mod database;
 mod dtos;
 
@@ -11,17 +14,10 @@ fn greet(name: &str) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Get the migrations from the database module
-    let migrations = database::migrations::get_migrations();
 
     tauri::Builder::default()
-        .plugin(
-            tauri_plugin_sql::Builder::default()
-                .add_migrations("sqlite:crabledger.db", migrations)
-                .build(),
-        )
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, add_category])
         .setup(|app| {
             // Set minimum window size constraints
             if let Some(window) = app.get_webview_window("main") {
