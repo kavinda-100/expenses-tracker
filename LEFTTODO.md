@@ -7,5 +7,5 @@
 - [x] setup CI/CD pipelines for auto building and publishing the app to GitHub releases.
 - [x] setup the SQLite database for storing the ledger data (use rusqlite).
 - [x] Implement the backend logic for adding, deleting, and retrieving transactions.
-- [ ] Implement the backend logic for adding, deleting, and retrieving categories.
-- [ ] Implement the backend logic for adding, deleting, and retrieving budgets.
+- [x] Implement the backend logic for adding, deleting, and retrieving categories.
+- [x] Implement the backend logic for adding, deleting, updating, and retrieving budgets.

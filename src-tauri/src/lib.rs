@@ -2,7 +2,7 @@ use tauri::Manager;
 
 use crate::{
     controllers::{
-        budget_controller::{add_budget, delete_budget},
+        budget_controller::{add_budget, delete_budget, get_budgets, update_budget},
         category_controller::{add_category, delete_category, get_all_categories},
         transaction_controller::{
             add_transaction, delete_transaction, get_all_transactions_with_category,
@@ -28,7 +28,7 @@ pub fn run() {
     let connection = match connect_to_db() {
         Ok(conn) => conn,
         Err(e) => {
-            eprintln!("Error connecting to the database: {}", e);
+            println!("Error connecting to the database: {}", e);
             panic!("Failed to connect to the database.");
         }
     };
@@ -38,9 +38,9 @@ pub fn run() {
         Ok(_) => println!("Migrations ran successfully."),
         Err(e) => {
             eprintln!("Error running migrations: {}", e);
-            panic!("Failed to run database migrations.");
+            // panic!("Failed to run database migrations.");
         }
-    }
+    };
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
@@ -53,7 +53,9 @@ pub fn run() {
             delete_transaction,
             get_all_transactions_with_category,
             add_budget,
-            delete_budget
+            delete_budget,
+            get_budgets,
+            update_budget
         ])
         .setup(|app| {
             // Set minimum window size constraints

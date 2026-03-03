@@ -97,11 +97,10 @@ pub fn get_all_categories() -> Result<Vec<CategoryResponseDto>, String> {
         .map_err(|e| format!("Failed to query categories: {}", e))?;
 
     // Collect the results into a vector
-    let mut categories = Vec::new();
-    // Iterate over the results and handle any mapping errors
-    for category in category_iter {
-        categories.push(category.map_err(|e| format!("Failed to map category: {}", e))?);
-    }
+    let categories: Vec<CategoryResponseDto> =
+        category_iter // Filter out any errors while mapping
+            .collect::<Result<Vec<CategoryResponseDto>, rusqlite::Error>>()
+            .map_err(|e| format!("Failed to map categories: {}", e))?;
 
     // Return the vector of categories
     Ok(categories)

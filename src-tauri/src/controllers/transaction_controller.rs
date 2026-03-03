@@ -131,7 +131,7 @@ pub fn get_all_transactions_with_category(
         .map_err(|e| format!("Failed to query transactions: {}", e))?;
 
     // Collect the results into a vector, handling any mapping errors
-    let transactions_with_category = transaction_iter
+    let transactions_with_category: Vec<TransactionWithCategoryResponseDto> = transaction_iter
         .collect::<Result<Vec<TransactionWithCategoryResponseDto>, rusqlite::Error>>()
         .map_err(|e| format!("Failed to collect transactions: {}", e))?;
 

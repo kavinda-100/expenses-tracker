@@ -1,7 +1,19 @@
 use rusqlite::{params, Connection};
 
-use crate::{constants::DB_FILE_NAME, dtos::request_dtos::BudgetRequestDto};
+use crate::{
+    constants::DB_FILE_NAME,
+    dtos::{
+        request_dtos::{AllBudgetRequestDto, BudgetRequestDto, UpdateBudgetRequestDto},
+        response_dtos::BudgetResponseDto,
+    },
+};
 
+/**
+ * Add a new budget to the database
+ * @param new_budget - The budget data to be added
+ * @return Result<String, String> - Ok(String) if the budget was added successfully,
+ * otherwise an error message is returned as a String
+ */
 #[tauri::command]
 pub fn add_budget(new_budget: BudgetRequestDto) -> Result<String, String> {
     let BudgetRequestDto {
@@ -37,6 +49,12 @@ pub fn add_budget(new_budget: BudgetRequestDto) -> Result<String, String> {
     Ok(format!("Budget added successfully with id: {}", last_id))
 }
 
+/**
+ * Delete a budget from the database
+ * @param budget_id - The ID of the budget to be deleted
+ * @return Result<String, String> - Ok(String) if the budget was deleted successfully,
+ * otherwise an error message is returned as a String
+ */
 #[tauri::command]
 pub fn delete_budget(budget_id: i64) -> Result<String, String> {
     // Open database connection and delete budget
@@ -51,5 +69,80 @@ pub fn delete_budget(budget_id: i64) -> Result<String, String> {
         Err(format!("No budget found with id: {}", budget_id))
     } else {
         Ok(format!("Budget with id {} deleted successfully", budget_id))
+    }
+}
+
+/**
+ * Get all budgets from the database only for the current month and year
+ * @param month - The month for which to retrieve budgets (1-12)
+ * @param year - The year for which to retrieve budgets (e.g., 2024)
+ * @return Result<Vec<BudgetResponseDto>, String> - Ok(Vec<BudgetResponseDto>) if the budgets were retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_budgets(params: AllBudgetRequestDto) -> Result<Vec<BudgetResponseDto>, String> {
+    // Open database connection and retrieve budgets
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Prepare the SQL statement to select budgets for the specified month and year
+    let mut stmt = conn
+        .prepare("SELECT id, amount, month, year, category_id, created_at FROM budgets WHERE month = ?1 AND year = ?2")
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query and map the results to BudgetResponseDto structs
+    let budget_iter = stmt
+        .query_map(params![params.month, params.year], |row| {
+            Ok(BudgetResponseDto {
+                id: row.get(0)?,
+                amount: row.get(1)?,
+                month: row.get(2)?,
+                year: row.get(3)?,
+                category_id: row.get(4)?,
+                created_at: row.get(5)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query budgets: {}", e))?;
+
+    // Collect the results into a vector, filtering out any errors
+    let budgets: Vec<BudgetResponseDto> = budget_iter
+        .collect::<Result<Vec<BudgetResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to map budget results: {}", e))?;
+
+    Ok(budgets)
+}
+
+/**
+ * Update an existing budget in the database
+ * @param updated_budget - The updated budget data, including the ID of the budget to be updated
+ * @return Result<String, String> - Ok(String) if the budget was updated successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn update_budget(updated_budget: UpdateBudgetRequestDto) -> Result<String, String> {
+    let UpdateBudgetRequestDto { id, amount } = updated_budget;
+
+    // Validate input
+    if amount <= 0.0 {
+        return Err("Budget amount must be greater than zero".to_string());
+    }
+
+    // Open database connection and update budget
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Execute the update statement and check how many rows were affected
+    let rows_affected = conn
+        .execute(
+            "UPDATE budgets SET amount = ?1 WHERE id = ?2",
+            params![amount, id],
+        )
+        .map_err(|e| format!("Failed to update budget: {}", e))?;
+
+    // If no rows were affected, it means the budget with the given ID was not found
+    if rows_affected == 0 {
+        Err(format!("No budget found with id: {}", id))
+    } else {
+        Ok(format!("Budget with id {} updated successfully", id))
     }
 }

@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct CategoryResponseDto {
     pub id: i64,
     pub name: String,
@@ -10,19 +9,6 @@ pub struct CategoryResponseDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
-pub struct TransactionResponseDto {
-    pub id: i64,
-    pub amount: f64,
-    pub description: Option<String>,
-    pub date: String,  // ISO 8601 format
-    pub type_: String, // "INCOME" or "EXPENSE"
-    pub category_id: i64,
-    pub created_at: String, // ISO 8601 format
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct BudgetResponseDto {
     pub id: i64,
     pub amount: f64,
@@ -33,7 +19,6 @@ pub struct BudgetResponseDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct TransactionWithCategoryResponseDto {
     pub id: i64,
     pub amount: f64,
