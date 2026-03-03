@@ -34,3 +34,9 @@ pub struct UpdateBudgetRequestDto {
     pub id: i64,
     pub amount: f64,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonthlyOverviewRequestDto {
+    pub month: u8, // 1-12
+    pub year: i32,
+}

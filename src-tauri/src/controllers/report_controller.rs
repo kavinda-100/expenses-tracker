@@ -1,7 +1,8 @@
 use rusqlite::{Connection, Result};
 
 use crate::constants::DB_FILE_NAME;
-use crate::dtos::response_dtos::ExpenseByCategoryResponseDto;
+use crate::dtos::response_dtos::{ExpenseByCategoryResponseDto, MonthlyOverviewResponseDto};
+use crate::dtos::request_dtos::MonthlyOverviewRequestDto;
 
 /**
  * Get total expenses grouped by category
@@ -41,4 +42,46 @@ pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, St
 
     // Return the total expenses by category
     Ok(expense_by_category)
+}
+
+/**
+ * Get Monthly Overview of total income, total expenses, for given month
+ * @param MonthlyOverviewRequestDto - month (1-12) and year for which the overview is requested
+ * @return Result<MonthlyOverviewResponseDto, String> - Ok(MonthlyOverviewResponseDto) if the data was retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_monthly_overview(request: MonthlyOverviewRequestDto) -> Result<MonthlyOverviewResponseDto, String> {
+
+    // Open database connection and query for total income and expenses
+    let conn =
+        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query total income and expenses for the specified month and year
+    let mut stmt = conn
+        .prepare(
+            "SELECT 
+                IFNULL(SUM(CASE WHEN type = 'INCOME' THEN amount END), 0) as total_income,
+                IFNULL(SUM(CASE WHEN type = 'EXPENSE' THEN amount END), 0) as total_expenses
+            FROM transactions
+            WHERE strftime('%m', date) = ?1 AND strftime('%Y', date) = ?2",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query with the provided month and year parameters
+    let overview = stmt
+        .query_row(
+            [format!("{:02}", request.month), request.year.to_string()],
+            |row| {
+                Ok(MonthlyOverviewResponseDto {
+                    month: request.month,
+                    total_income: row.get(0)?,
+                    total_expenses: row.get(1)?
+                })
+            },
+        )
+        .map_err(|e| format!("Failed to query monthly overview: {}", e))?;
+
+    // Return the monthly overview data
+    Ok(overview)
 }
