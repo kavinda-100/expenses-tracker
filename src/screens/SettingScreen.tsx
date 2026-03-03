@@ -94,8 +94,19 @@ const SettingScreen = () => {
             {/* About Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="text-lg">About CrabLedger</CardTitle>
-                    <CardDescription>Version 0.1.0</CardDescription>
+                    <div className="flex items-center gap-3">
+                        <img
+                            src="/logo.png"
+                            alt="CrabLedger Logo"
+                            className="w-10 h-10 rounded-lg"
+                        />
+                        <div>
+                            <CardTitle className="text-lg">
+                                About CrabLedger
+                            </CardTitle>
+                            <CardDescription>Version 0.1.0</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <div className="space-y-2">
@@ -103,7 +114,7 @@ const SettingScreen = () => {
                             CrabLedger is a modern, cross-platform desktop
                             application designed to help you take control of
                             your personal finances. Built with privacy in mind,
-                            all your data stays securely on your device—no
+                            all your data stays securely on your device, no
                             cloud, no tracking, just you and your financial
                             data.
                         </p>
