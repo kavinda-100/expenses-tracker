@@ -11,7 +11,7 @@ use crate::dtos::response_dtos::{
 };
 
 /**
- * Get total expenses grouped by category
+ * Get total expenses grouped by category for
  * @return Result<Vec<ExpenseByCategoryResponseDto>, String> - Ok(Vec<ExpenseByCategoryResponseDto>) if the data was retrieved successfully,
  * otherwise an error message is returned as a String
  */

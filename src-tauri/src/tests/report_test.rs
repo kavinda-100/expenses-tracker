@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod report_tests {
-    use crate::controllers::report_controller::{get_last_month_habits, get_last_year_habits};
-    use crate::dtos::request_dtos::{LastMonthHabitsRequestDto, LastYearHabitsRequestDto};
+    use crate::controllers::report_controller::{get_expense_by_category, get_last_month_habits, get_last_year_habits, get_monthly_overview, get_yearly_overview};
+    use crate::dtos::request_dtos::{LastMonthHabitsRequestDto, LastYearHabitsRequestDto, MonthlyOverviewRequestDto, YearlyOverviewRequestDto};
     use crate::tests::{setup_test_db, teardown_test_db};
 
     #[test]
@@ -169,6 +169,97 @@ mod report_tests {
 
         // print the data for debugging
         println!("test_get_last_year_habits_no_data {:?}", habits);
+
+        // Teardown
+        teardown_test_db();
+    }
+
+    #[test]
+    fn test_get_expense_by_category(){
+        // Setup
+        let _conn = setup_test_db();
+
+        // Call the actual controller function with test database
+        let expenses_by_category = get_expense_by_category()
+            .expect("Failed to get expense by category");
+
+        // Assertions
+        assert!(!expenses_by_category.is_empty(), "Should have expense data by category");
+
+        // Check that we have the expected categories and amounts
+        let groceries = expenses_by_category
+            .iter()
+            .find(|e| e.category_name == "Groceries")
+            .unwrap();
+        assert!(groceries.total_expense > 0.0, "Groceries should have expenses");
+
+        // Check that Transportation has expenses
+        let transportation = expenses_by_category
+            .iter()
+            .find(|e| e.category_name == "Transportation")
+            .unwrap();
+        assert!(transportation.total_expense > 0.0, "Transportation should have expenses");
+
+        // print the data for debugging
+        println!("test_get_expense_by_category {:?}", expenses_by_category);
+
+        // Teardown
+        teardown_test_db();
+    }
+
+
+    #[test]
+    fn test_get_monthly_overview(){
+        // Setup
+        let _conn = setup_test_db();
+
+        // Create request for February 2026
+        let request = MonthlyOverviewRequestDto {
+            month: 2,
+            year: 2026,
+        };
+
+        // Call the actual controller function with test database
+        let overview = get_monthly_overview(request)
+            .expect("Failed to get monthly overview");
+
+        // Assertions
+        assert!(overview.total_income > 0.0, "Should have total income for February 2026");
+        assert!(overview.total_expenses > 0.0, "Should have total expenses for February 2026");
+
+        // print the data for debugging
+        println!("test_get_monthly_overview {:?}", overview);
+
+        // Teardown
+        teardown_test_db();
+    }
+
+    #[test]
+    fn test_get_yearly_overview(){
+        // Setup
+        let _conn = setup_test_db();
+
+        // Create request for 2025
+        let request = YearlyOverviewRequestDto {
+            year: 2025,
+        };
+
+        // Call the actual controller function with test database
+        let overview = get_yearly_overview(request)
+            .expect("Failed to get yearly overview");
+
+        // get the first month overview (January) and check values
+        let january = overview
+            .iter()
+            .find(|m| m.month == 1)
+            .unwrap();
+
+        // Assertions
+        assert!(january.total_income > 0.0, "January should have total income");
+        assert!(january.total_expenses > 0.0, "January should have total expenses");
+
+        // print the data for debugging
+        println!("test_get_yearly_overview {:?}", overview);
 
         // Teardown
         teardown_test_db();
