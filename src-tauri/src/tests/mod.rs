@@ -20,10 +20,10 @@ pub fn setup_test_db() -> Connection {
     let _ = fs::remove_file(db_file_path);
 
     // Create new test database connection
-    let conn = Connection::open(db_file_path).expect("Failed to create test database");
+    let mut conn = Connection::open(db_file_path).expect("Failed to create test database");
 
     // Run migrations
-    run_test_migrations(&conn).expect("Failed to run migrations");
+    run_test_migrations(&mut conn).expect("Failed to run migrations");
 
     // Insert mock data
     insert_mock_data(&conn).expect("Failed to insert mock data");
@@ -33,9 +33,9 @@ pub fn setup_test_db() -> Connection {
 
 /// Run database migrations for test database
 #[allow(dead_code)]
-pub fn run_test_migrations(conn: &Connection) -> Result<(), String> {
+pub fn run_test_migrations(conn: &mut Connection) -> Result<(), String> {
     // run migrations to ensure the database schema is up to date
-    // match run_migrations(&conn) {
+    // match run_migrations(&mut conn) {
     //     Ok(_) => println!("Migrations ran successfully."),
     //     Err(e) => {
     //         eprintln!("Error running migrations: {}", e);

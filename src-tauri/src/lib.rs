@@ -35,7 +35,7 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // connect to the database when the application starts
-    let connection = match connect_to_db() {
+    let mut connection = match connect_to_db() {
         Ok(conn) => conn,
         Err(e) => {
             println!("Error connecting to the database: {}", e);
@@ -44,7 +44,7 @@ pub fn run() {
     };
 
     // run migrations to ensure the database schema is up to date
-    match run_migrations(&connection) {
+    match run_migrations(&mut connection) {
         Ok(_) => println!("Migrations ran successfully."),
         Err(e) => {
             eprintln!("Error running migrations: {}", e);
