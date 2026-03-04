@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const budgetZodSchema = z.object({
-    id: z.string().min(1, "Budget ID is required"),
+    id: z.number().int().positive("Budget ID must be positive"),
     amount: z.number().positive("Budget amount must be positive"),
     month: z
         .number()
