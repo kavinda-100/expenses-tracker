@@ -10,15 +10,18 @@ use std::fs;
 
 use crate::constants::DB_FILE_NAME;
 use crate::database::migrations::run_migrations;
+use crate::helpers::helper::get_db_file_path;
 
 /// Helper function to set up a test database with schema and mock data
 #[allow(dead_code)]
 pub fn setup_test_db() -> Connection {
+    // get the DB File
+    let db_file_path = get_db_file_path();
     // Remove existing test database if it exists
-    let _ = fs::remove_file(DB_FILE_NAME);
+    let _ = fs::remove_file(db_file_path);
 
     // Create new test database connection
-    let conn = Connection::open(DB_FILE_NAME).expect("Failed to create test database");
+    let conn = Connection::open(db_file_path).expect("Failed to create test database");
 
     // Run migrations
     run_test_migrations(&conn).expect("Failed to run migrations");
