@@ -1,5 +1,5 @@
-import React from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import React from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 // Example usage of the invoke method in Tauri to call a Rust command from the frontend
 // async function greet() {
@@ -16,39 +16,39 @@ import { invoke } from '@tauri-apps/api/core';
  * @returns The data, error, loading states, along with functions to mutate.
  */
 export function useTauriMutation<T, E>() {
-	const [data, setData] = React.useState<T | null>(null);
-	const [error, setError] = React.useState<E | null>(null);
-	const [isError, setIsError] = React.useState(false);
-	const [loading, setLoading] = React.useState(false);
+    const [data, setData] = React.useState<T | null>(null);
+    const [error, setError] = React.useState<E | null>(null);
+    const [isError, setIsError] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
 
-	const mutationAsync = async (
-		command: string,
-		inputParams?: Record<string, any>,
-	) => {
-		setLoading(true);
-		setError(null);
-		setIsError(false);
-		try {
-			const result = await invoke<T>(command, inputParams);
-			setError(null);
-			setIsError(false);
-			setData(result);
-		} catch (err) {
-			setError(err as E);
-			setIsError(true);
-			setData(null);
-			console.error(`Error invoking command "${command}":`, err);
-		} finally {
-			setLoading(false);
-		}
-	};
+    const mutationAsync = async (
+        command: string,
+        inputParams?: Record<string, any>,
+    ) => {
+        setLoading(true);
+        setError(null);
+        setIsError(false);
+        try {
+            const result = await invoke<T>(command, { inputParams });
+            setError(null);
+            setIsError(false);
+            setData(result);
+        } catch (err) {
+            setError(err as E);
+            setIsError(true);
+            setData(null);
+            console.error(`Error invoking command "${command}":`, err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-	const reset = () => {
-		setData(null);
-		setError(null);
-		setIsError(false);
-		setLoading(false);
-	};
+    const reset = () => {
+        setData(null);
+        setError(null);
+        setIsError(false);
+        setLoading(false);
+    };
 
-	return { data, error, isError, loading, mutationAsync, reset };
+    return { data, error, isError, loading, mutationAsync, reset };
 }
