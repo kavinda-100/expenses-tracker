@@ -13,7 +13,7 @@
 - [x] Implement the backend logic for retrieving for last 7 days transactions for the dashboard (INCOME, EXPENSE).
 - [x] Implement the backend logic for retrieving for recent transactions for the dashboard with filters.
 - [x] Implement the backend logic for report screens (daily, weekly, monthly, yearly).
-- [ ] Implement test for the backend logic (controllers) using Rust's built-in testing framework.
+- [x] Implement test for the backend logic (controllers) using Rust's built-in testing framework.
     - [x] report controller tests
     - [x] transaction controller tests
     - [x] category controller tests

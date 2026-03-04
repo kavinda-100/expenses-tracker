@@ -30,7 +30,25 @@
 
 ---
 
-## 🛠️ Tech Stack
+## � Download
+
+### Pre-built Releases
+
+Download the latest version for your platform:
+
+**[📦 Download from GitHub Releases](https://github.com/kavinda-100/expenses-tracker/releases)**
+
+Available for:
+
+- 🐧 **Linux** - `.deb`, `.rpm`, `.AppImage`
+- 🪟 **Windows** - `.exe`, `.msi` installer
+- 🍎 **macOS** - `.dmg` disk image (Apple Silicon or intel - 2019 above)
+
+> 💡 **Quick Start:** Download the appropriate installer for your platform and follow the installation instructions in the [Installation Guide](#-installation-guide) section below.
+
+---
+
+## �🛠️ Tech Stack
 
 ### Frontend
 
@@ -46,7 +64,10 @@
 
 - **Framework:** Tauri 2.0
 - **Language:** Rust
+- **Database:** SQLite (local storage)
 - **Runtime:** Bun
+- **Architecture:** Modular controller-based design
+- **Testing:** Comprehensive unit & integration tests (37 tests, 100% pass rate)
 
 ---
 
@@ -262,16 +283,243 @@ expenses-tracker/
 │   ├── lib/                      # Utility functions
 │   ├── App.tsx                   # Main app component
 │   └── main.tsx                  # Entry point
-├── src-tauri/                    # Tauri backend
-│   ├── src/                      # Rust source code
-│   │   ├── main.rs               # Main entry point
-│   │   └── lib.rs                # Application logic
-│   ├── icons/                    # Application icons
-│   ├── Cargo.toml                # Rust dependencies
-│   └── tauri.conf.json           # Tauri configuration
+├── src-tauri/                    # Tauri backend (Rust)
+│   ├── src/
+│   │   ├── main.rs               # Application entry point
+│   │   ├── lib.rs                # Tauri command registration & initialization
+│   │   ├── constants.rs          # Application-wide constants
+│   │   ├── controllers/          # Business logic layer
+│   │   │   ├── mod.rs            # Controller module exports
+│   │   │   ├── budget_controller.rs       # Budget CRUD operations
+│   │   │   ├── category_controller.rs     # Category management
+│   │   │   ├── dashboard_controller.rs    # Dashboard data aggregation
+│   │   │   ├── report_controller.rs       # Financial reports & analytics
+│   │   │   ├── settings_controller.rs     # App settings & data management
+│   │   │   └── transaction_controller.rs  # Transaction operations
+│   │   ├── database/             # Data persistence layer
+│   │   │   ├── mod.rs            # Database module exports
+│   │   │   ├── migrations.rs     # SQLite schema migrations
+│   │   │   └── models.rs         # Database models & schema definitions
+│   │   ├── dtos/                 # Data Transfer Objects
+│   │   │   ├── mod.rs            # DTO module exports
+│   │   │   ├── request_dtos.rs   # Request payload structures
+│   │   │   └── response_dtos.rs  # Response payload structures
+│   │   └── tests/                # Comprehensive test suite
+│   │       ├── mod.rs            # Test module configuration
+│   │       ├── budget_test.rs    # Budget functionality tests
+│   │       ├── category_test.rs  # Category tests
+│   │       ├── dashboard_test.rs # Dashboard tests
+│   │       ├── report_test.rs    # Report generation tests
+│   │       ├── settings_test.rs  # Settings tests
+│   │       └── transaction_test.rs # Transaction tests
+│   ├── Cargo.toml                # Rust dependencies & metadata
+│   ├── tauri.conf.json           # Tauri configuration
+│   ├── makefile                  # Backend build & test commands
+│   └── icons/                    # Application icons for all platforms
 ├── public/                       # Static assets
 └── package.json                  # Node dependencies
 ```
+
+---
+
+## 🦀 Backend Architecture
+
+### Overview
+
+The backend is built with **Rust** and **Tauri 2.0**, providing a secure, fast, and type-safe foundation for the application. It follows a **modular, controller-based architecture** with clear separation of concerns.
+
+### Architecture Layers
+
+#### **1. Controllers Layer** (`src-tauri/src/controllers/`)
+
+Contains all business logic organized by feature domain. Each controller handles specific functionality:
+
+- **`budget_controller.rs`** - Budget planning and management
+    - Create, read, update, delete budgets
+    - Monthly budget tracking by category
+    - Budget validation and constraints
+
+- **`category_controller.rs`** - Transaction categorization
+    - Manage income/expense categories
+    - Custom category creation
+    - Category-based organization
+
+- **`dashboard_controller.rs`** - Dashboard data aggregation
+    - Financial overview statistics
+    - Recent transactions feed
+    - 7-day spending trends
+    - Balance calculations
+
+- **`report_controller.rs`** - Financial analytics & reports
+    - Monthly/yearly overview reports
+    - Expense breakdown by category
+    - Spending habits analysis
+    - Historical data visualization
+
+- **`transaction_controller.rs`** - Core transaction operations
+    - Add/edit/delete transactions
+    - Transaction filtering by date range
+    - Income and expense tracking
+    - Transaction validation
+
+- **`settings_controller.rs`** - Application settings
+    - Database management
+    - Data export/import
+    - Clear all data functionality
+
+#### **2. Database Layer** (`src-tauri/src/database/`)
+
+Manages all data persistence using **SQLite**:
+
+- **`models.rs`** - Database schema definitions
+    - Transactions table
+    - Categories table
+    - Budgets table
+    - Indexed for optimal query performance
+
+- **`migrations.rs`** - Schema version control
+    - Automatic database initialization
+    - Safe schema upgrades
+      Testing (Backend)
+      cd src-tauri
+      make test # Run all backend tests
+      cargo test --lib # Alternative test command
+
+# - Data integrity enforcement
+
+#### **3. DTOs Layer** (`src-tauri/src/dtos/`)
+
+Defines type-safe data contracts between frontend and backend:
+
+- **`request_dtos.rs`** - Incoming request structures
+    - Input validation
+    - Type safety for API calls
+
+- **`response_dtos.rs`** - Outgoing response structures
+    - Consistent response format
+    - Serialization optimization
+
+### Database Schema
+
+**SQLite** database with three main tables:
+
+1. **`transactions`**
+    - Income and expense records
+    - Linked to categories
+    - Date-indexed for fast queries
+
+2. **`categories`**
+    - User-defined categories
+    - Type: INCOME or EXPENSE
+    - Custom icons support
+
+3. **`budgets`**
+    - Monthly budget limits per category
+    - Period tracking (month/year)
+    - Overspending alerts
+
+### API Communication
+
+All backend functions are exposed as **Tauri commands**:
+
+```rust
+// Example: Transaction creation
+#[tauri::command]
+async fn add_transaction(
+    data: AddTransactionRequestDto,
+    state: State<'_, AppState>
+) -> Result<String, String>
+```
+
+Frontend communicates via the custom hooks:
+
+- `useTauriQuery` for GET operations
+- `useTauriMutation` for POST/PUT/DELETE operations
+
+---
+
+## 🧪 Testing
+
+### Test Coverage
+
+The backend has **comprehensive test coverage** ensuring reliability and correctness.
+
+**Test Results:**
+
+```
+✅ 37 tests passed | 0 failed
+📊 100% pass rate
+⏱️  Execution time: 7.74s
+```
+
+### Test Organization
+
+Tests are organized by feature domain in `src-tauri/src/tests/`:
+
+| Test Suite                                    | Tests | Coverage                                   |
+| --------------------------------------------- | ----- | ------------------------------------------ |
+| **Budget Tests** (`budget_test.rs`)           | 10    | CRUD operations, validation, edge cases    |
+| **Category Tests** (`category_test.rs`)       | 6     | Category management, validation            |
+| **Dashboard Tests** (`dashboard_test.rs`)     | 4     | Overview data, recent transactions, trends |
+| **Report Tests** (`report_test.rs`)           | 7     | Monthly/yearly reports, spending habits    |
+| **Transaction Tests** (`transaction_test.rs`) | 9     | CRUD operations, validation, filtering     |
+| **Settings Tests** (`settings_test.rs`)       | 1     | Data management operations                 |
+
+### Testing Approach
+
+**Key Features:**
+
+- ✅ Isolated test environments (each test uses fresh DB)
+- ✅ Comprehensive validation testing
+- ✅ Edge case coverage (invalid inputs, non-existent IDs)
+- ✅ Integration testing with real SQLite database
+- ✅ Sequential execution for consistency (`--test-threads=1`)
+
+### Running Tests
+
+```bash
+# Navigate to backend directory
+cd src-tauri
+
+# Run all tests (using Makefile)
+make test
+
+# Run module tests
+make test-module MODULE=transaction_test
+# MODULE can be: budget_test, category_test, dashboard_test, report_test, settings_test, transaction_test
+
+# Or run directly with cargo
+cargo test --lib -- --nocapture --test-threads=1
+
+# Run specific test suite
+cargo test transaction_test -- --nocapture --test-threads=1
+```
+
+### Sample Test Coverage
+
+**Budget Tests:**
+
+- ✅ Add budget with valid data
+- ✅ Add budget with invalid amount/month/year
+- ✅ Update budget (valid & invalid scenarios)
+- ✅ Delete budget (existing & non-existent)
+- ✅ Retrieve all budgets
+
+**Transaction Tests:**
+
+- ✅ Add transaction with complete data
+- ✅ Validation for amount, type, and date
+- ✅ Update transaction details
+- ✅ Delete transactions
+- ✅ Filter by date range and category
+
+**Report Tests:**
+
+- ✅ Monthly financial overview
+- ✅ Yearly spending trends
+- ✅ Expense breakdown by category
+- ✅ Last 12 months spending habits
+- ✅ Handle periods with no data
 
 ---
 
