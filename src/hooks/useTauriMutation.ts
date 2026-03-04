@@ -29,7 +29,7 @@ export function useTauriMutation<T, E>() {
         setError(null);
         setIsError(false);
         try {
-            const result = await invoke<T>(command, { inputParams });
+            const result = await invoke<T>(command, inputParams || {});
             setError(null);
             setIsError(false);
             setData(result);

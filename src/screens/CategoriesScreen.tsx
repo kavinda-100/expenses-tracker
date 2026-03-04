@@ -106,8 +106,10 @@ const CategoriesScreen = () => {
 
         setFormError(null);
         await createCategoryAsync("add_category", {
-            name: validatedData.data.name,
-            type: validatedData.data.type,
+            newCategory: {
+                name: validatedData.data.name,
+                type: validatedData.data.type,
+            },
         });
         // refetch categories after adding a new one
         await refetchCategories();
@@ -116,9 +118,9 @@ const CategoriesScreen = () => {
         setType("EXPENSE");
     };
 
-    // handler for deleting a category (not implemented yet)
-    const handleDeleteCategory = async (id: string) => {
-        await deleteCategoryAsync("delete_category", { id });
+    // handler for deleting a category
+    const handleDeleteCategory = async (id: number) => {
+        await deleteCategoryAsync("delete_category", { categoryId: id });
         // refetch categories after deleting one
         await refetchCategories();
     };
