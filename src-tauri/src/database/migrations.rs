@@ -1,6 +1,6 @@
 use rusqlite::Connection;
 
-use crate::constants::DB_FILE_NAME;
+use crate::{helpers::helper::get_db_file_path};
 
 /**
  * Connect to the SQLite database
@@ -8,8 +8,9 @@ use crate::constants::DB_FILE_NAME;
  * otherwise an error message is returned as a String
  */
 pub fn connect_to_db() -> Result<Connection, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
     // Attempt to open a connection to the SQLite database file
-    let db_file = DB_FILE_NAME;
 
     // one way to handle the error is using the map_err method to convert the rusqlite::Error into a String
     // let conn = Connection::open(db_file);

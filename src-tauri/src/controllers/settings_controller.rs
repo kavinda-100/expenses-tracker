@@ -1,6 +1,6 @@
 use rusqlite::{params, Connection};
 
-use crate::constants::DB_FILE_NAME;
+use crate::{helpers::helper::get_db_file_path};
 
 /**
  * Clear all data from the database, including transactions, categories, and budgets
@@ -9,9 +9,12 @@ use crate::constants::DB_FILE_NAME;
  */
 #[tauri::command]
 pub fn clear_all_data_from_database() -> Result<String, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+    
     // Open database connection
     let mut conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Begin a transaction so that all deletes are atomic
     let tx = conn

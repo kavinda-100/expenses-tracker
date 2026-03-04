@@ -8,7 +8,6 @@ pub mod transaction_test;
 use rusqlite::Connection;
 use std::fs;
 
-use crate::constants::DB_FILE_NAME;
 use crate::database::migrations::run_migrations;
 use crate::helpers::helper::get_db_file_path;
 
@@ -154,5 +153,6 @@ fn insert_mock_data(conn: &Connection) -> Result<(), String> {
 /// Clean up test database
 #[allow(dead_code)]
 pub fn teardown_test_db() {
-    let _ = fs::remove_file(DB_FILE_NAME);
+    let db_file_path = get_db_file_path();
+    let _ = fs::remove_file(db_file_path);
 }

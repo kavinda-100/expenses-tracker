@@ -1,6 +1,5 @@
 use rusqlite::{Connection, Result};
 
-use crate::constants::DB_FILE_NAME;
 use crate::dtos::request_dtos::{
     LastMonthHabitsRequestDto, LastYearHabitsRequestDto, MonthlyOverviewRequestDto,
     YearlyOverviewRequestDto,
@@ -9,6 +8,7 @@ use crate::dtos::response_dtos::{
     ExpenseByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto,
     MonthlyOverviewResponseDto, YearlyOverviewResponseDto,
 };
+use crate::helpers::helper::get_db_file_path;
 
 /**
  * Get total expenses grouped by category for
@@ -17,9 +17,12 @@ use crate::dtos::response_dtos::{
  */
 #[tauri::command]
 pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection and query for total income and expenses
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total expenses grouped by category
     let mut stmt = conn
@@ -60,9 +63,12 @@ pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, St
 pub fn get_monthly_overview(
     request: MonthlyOverviewRequestDto,
 ) -> Result<MonthlyOverviewResponseDto, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection and query for total income and expenses
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income and expenses for the specified month and year
     let mut stmt = conn
@@ -103,9 +109,12 @@ pub fn get_monthly_overview(
 pub fn get_yearly_overview(
     request: YearlyOverviewRequestDto,
 ) -> Result<Vec<YearlyOverviewResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection and query for total income and expenses
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income and expenses for each month in the specified year
     let mut stmt = conn
@@ -151,9 +160,12 @@ pub fn get_yearly_overview(
 pub fn get_last_month_habits(
     request: LastMonthHabitsRequestDto,
 ) -> Result<Vec<LastMonthHabitsResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get total expenses grouped by category for the specified month
     let mut stmt = conn
@@ -203,9 +215,12 @@ pub fn get_last_month_habits(
 pub fn get_last_year_habits(
     request: LastYearHabitsRequestDto,
 ) -> Result<Vec<LastYearHabitsResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get total expenses grouped by category for the specified year
     let mut stmt = conn

@@ -1,10 +1,8 @@
 use rusqlite::{Connection, Result};
 
-use crate::constants::DB_FILE_NAME;
-
-use crate::dtos::response_dtos::{
+use crate::{dtos::response_dtos::{
     DashboardOverviewResponseDto, PastSevenDaysDataResponseDto, RecentTransactionsResponseDto,
-};
+}, helpers::helper::get_db_file_path};
 
 /**
  * Get an overview of the dashboard, including total income, total expenses, and net balance
@@ -13,9 +11,12 @@ use crate::dtos::response_dtos::{
  */
 #[tauri::command]
 pub fn get_dashboard_overview() -> Result<DashboardOverviewResponseDto, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+    
     // Open database connection and query for total income and expenses
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income
     let total_income: f64 = conn
@@ -52,9 +53,12 @@ pub fn get_dashboard_overview() -> Result<DashboardOverviewResponseDto, String> 
  */
 #[tauri::command]
 pub fn get_past_seven_days_data() -> Result<Vec<PastSevenDaysDataResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection and query for total income and expenses for the past 7 days
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income and expenses for the past 7 days, grouped by day
     let mut stmt = conn
@@ -101,6 +105,9 @@ pub fn get_past_seven_days_data() -> Result<Vec<PastSevenDaysDataResponseDto>, S
 pub fn get_recent_transactions(
     limit: Option<u8>,
 ) -> Result<Vec<RecentTransactionsResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+    
     // Default to 5 transactions if no limit is provided
     let limit = match limit {
         Some(v) => v,
@@ -109,7 +116,7 @@ pub fn get_recent_transactions(
 
     // Open database connection and query for recent transactions
     let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query recent transactions, joining with categories to get the category name
     let mut stmt = conn
