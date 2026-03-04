@@ -1,10 +1,11 @@
 use rusqlite::{params, Connection};
 
 use crate::{
-    constants::DB_FILE_NAME,
     dtos::{
-        request_dtos::TransactionRequestDto, response_dtos::TransactionWithCategoryResponseDto,
+        request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto},
+        response_dtos::TransactionWithCategoryResponseDto,
     },
+    helpers::helper::get_db_file_path,
 };
 
 /**
@@ -15,6 +16,9 @@ use crate::{
  */
 #[tauri::command]
 pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Destructure the TransactionRequestDto to get the individual fields
     let TransactionRequestDto {
         amount,
@@ -36,8 +40,7 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
     }
 
     // Open database connection and insert transaction
-    let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Example of inserting a transaction (you would replace this with actual transaction data)
     conn.execute(
@@ -64,9 +67,11 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
  */
 #[tauri::command]
 pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
     // Open database connection and delete transaction
-    let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Execute the delete statement and check how many rows were affected
     let rows_affected = conn
@@ -89,19 +94,30 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
 
 /**
  * Get all transactions from the database in a specific date range with category information
- * @param start_date - The start date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-01")
- * @param end_date - The end date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-31")
+ * @param params - The request parameters containing the start and end dates for filtering transactions, represented as a GetAllTransactionsWithCategoryRequestDto (ISO 8601 format)
  * @return Result<Vec<TransactionWithCategory>, String> - Ok(Vec<TransactionWithCategory>) if the transactions were retrieved successfully,
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
 pub fn get_all_transactions_with_category(
-    start_date: String,
-    end_date: String,
+    params: GetAllTransactionsWithCategoryRequestDto,
 ) -> Result<Vec<TransactionWithCategoryResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
+    // Destructure the GetAllTransactionsWithCategoryRequestDto to get the start and end dates
+    let GetAllTransactionsWithCategoryRequestDto {
+        start_date,
+        end_date,
+    } = params;
+
+    // Validate input
+    if start_date.trim().is_empty() || end_date.trim().is_empty() {
+        return Err("Start date and end date cannot be empty".to_string());
+    }
+
     // Open database connection
-    let conn =
-        Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get transactions with category information in the specified date range
     let mut stmt = conn

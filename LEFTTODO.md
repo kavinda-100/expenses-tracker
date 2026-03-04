@@ -12,4 +12,12 @@
 - [x] Implement the backend logic for retrieving dashboard overview data (total income, total expenses, net balance).
 - [x] Implement the backend logic for retrieving for last 7 days transactions for the dashboard (INCOME, EXPENSE).
 - [x] Implement the backend logic for retrieving for recent transactions for the dashboard with filters.
-- [ ] Implement the backend logic for report screens (daily, weekly, monthly, yearly).
+- [x] Implement the backend logic for report screens (daily, weekly, monthly, yearly).
+- [x] Implement test for the backend logic (controllers) using Rust's built-in testing framework.
+    - [x] report controller tests
+    - [x] transaction controller tests
+    - [x] category controller tests
+    - [x] budget controller tests
+    - [x] dashboard controller tests
+    - [x] create settings controller and implement tests for it.
+- [ ] Implement the frontend UI using React and Tailwind CSS.

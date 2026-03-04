@@ -7,6 +7,11 @@ use crate::{
         dashboard_controller::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
         },
+        report_controller::{
+            get_expense_by_category, get_last_month_habits, get_last_year_habits,
+            get_monthly_overview, get_yearly_overview,
+        },
+        settings_controller::clear_all_data_from_database,
         transaction_controller::{
             add_transaction, delete_transaction, get_all_transactions_with_category,
         },
@@ -18,6 +23,8 @@ mod constants;
 mod controllers;
 mod database;
 mod dtos;
+mod helpers;
+mod tests;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -28,7 +35,7 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     // connect to the database when the application starts
-    let connection = match connect_to_db() {
+    let mut connection = match connect_to_db() {
         Ok(conn) => conn,
         Err(e) => {
             println!("Error connecting to the database: {}", e);
@@ -37,7 +44,7 @@ pub fn run() {
     };
 
     // run migrations to ensure the database schema is up to date
-    match run_migrations(&connection) {
+    match run_migrations(&mut connection) {
         Ok(_) => println!("Migrations ran successfully."),
         Err(e) => {
             eprintln!("Error running migrations: {}", e);
@@ -61,7 +68,13 @@ pub fn run() {
             update_budget,
             get_dashboard_overview,
             get_past_seven_days_data,
-            get_recent_transactions
+            get_recent_transactions,
+            get_expense_by_category,
+            get_monthly_overview,
+            get_yearly_overview,
+            get_last_month_habits,
+            get_last_year_habits,
+            clear_all_data_from_database
         ])
         .setup(|app| {
             // Set minimum window size constraints

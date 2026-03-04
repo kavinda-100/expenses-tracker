@@ -16,7 +16,13 @@ pub struct TransactionRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BudgetRequestDto {
+pub struct GetAllTransactionsWithCategoryRequestDto {
+    pub start_date: String, // ISO 8601 format
+    pub end_date: String,   // ISO 8601 format
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct AddBudgetRequestDto {
     pub amount: f64,
     pub month: u8, // 1-12
     pub year: i32,
@@ -24,7 +30,7 @@ pub struct BudgetRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AllBudgetRequestDto {
+pub struct GetAllBudgetRequestDto {
     pub month: u8, // 1-12
     pub year: i32,
 }
@@ -33,4 +39,26 @@ pub struct AllBudgetRequestDto {
 pub struct UpdateBudgetRequestDto {
     pub id: i64,
     pub amount: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonthlyOverviewRequestDto {
+    pub month: u8, // 1-12
+    pub year: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct YearlyOverviewRequestDto {
+    pub year: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastMonthHabitsRequestDto {
+    pub month: u8, // 1-12
+    pub year: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastYearHabitsRequestDto {
+    pub year: i32,
 }

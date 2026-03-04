@@ -15,6 +15,7 @@ pub struct BudgetResponseDto {
     pub month: u8, // 1-12
     pub year: i32,
     pub category_id: i64,
+    pub category_name: String,
     pub created_at: String, // ISO 8601 format
 }
 
@@ -50,4 +51,36 @@ pub struct RecentTransactionsResponseDto {
     pub amount: f64,
     pub date: String,
     pub type_: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ExpenseByCategoryResponseDto {
+    pub category_name: String,
+    pub total_expense: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MonthlyOverviewResponseDto {
+    pub month: u8,
+    pub total_income: f64,
+    pub total_expenses: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct YearlyOverviewResponseDto {
+    pub month: u8,
+    pub total_income: f64,
+    pub total_expenses: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastMonthHabitsResponseDto {
+    pub category_name: String,
+    pub total_amount: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LastYearHabitsResponseDto {
+    pub category_name: String,
+    pub total_amount: f64,
 }

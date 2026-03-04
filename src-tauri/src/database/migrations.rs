@@ -1,6 +1,6 @@
 use rusqlite::Connection;
 
-use crate::constants::DB_FILE_NAME;
+use crate::helpers::helper::get_db_file_path;
 
 /**
  * Connect to the SQLite database
@@ -8,8 +8,9 @@ use crate::constants::DB_FILE_NAME;
  * otherwise an error message is returned as a String
  */
 pub fn connect_to_db() -> Result<Connection, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
     // Attempt to open a connection to the SQLite database file
-    let db_file = DB_FILE_NAME;
 
     // one way to handle the error is using the map_err method to convert the rusqlite::Error into a String
     // let conn = Connection::open(db_file);
@@ -25,17 +26,23 @@ pub fn connect_to_db() -> Result<Connection, String> {
 
 /**
  * Create all migrations for the database schema
- * @param conn - The database connection
+ * Uses a transaction to ensure all migrations are applied atomically
+ * @param conn - The mutable database connection
  * @return Result<(), String> - Ok(()) if the migrations ran successfully,
  * otherwise an error message is returned as a String
  */
-pub fn run_migrations(conn: &Connection) -> Result<(), String> {
+pub fn run_migrations(conn: &mut Connection) -> Result<(), String> {
+    // Begin a transaction so that all migrations are atomic
+    let tx = conn
+        .transaction()
+        .map_err(|e| format!("Failed to begin transaction: {}", e))?;
+
     // Enable foreign key constraints
-    conn.execute("PRAGMA foreign_keys = ON;", [])
+    tx.execute("PRAGMA foreign_keys = ON;", [])
         .map_err(|e| format!("Failed to enable foreign keys: {}", e))?;
 
     // Migration 1: Create categories table
-    conn.execute(
+    tx.execute(
         "CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL UNIQUE,
@@ -47,20 +54,20 @@ pub fn run_migrations(conn: &Connection) -> Result<(), String> {
     .map_err(|e| format!("Failed to create categories table: {}", e))?;
 
     // Create indexes for categories table
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_categories_type ON categories(type);",
         [],
     )
     .map_err(|e| format!("Failed to create categories type index: {}", e))?;
 
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name);",
         [],
     )
     .map_err(|e| format!("Failed to create categories name index: {}", e))?;
 
     // Migration 2: Create transactions table
-    conn.execute(
+    tx.execute(
         "CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             amount REAL NOT NULL,
@@ -76,26 +83,26 @@ pub fn run_migrations(conn: &Connection) -> Result<(), String> {
     .map_err(|e| format!("Failed to create transactions table: {}", e))?;
 
     // Create indexes for transactions table
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_transactions_category_id ON transactions(category_id);",
         [],
     )
     .map_err(|e| format!("Failed to create transactions category_id index: {}", e))?;
 
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);",
         [],
     )
     .map_err(|e| format!("Failed to create transactions date index: {}", e))?;
 
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);",
         [],
     )
     .map_err(|e| format!("Failed to create transactions type index: {}", e))?;
 
     // Migration 3: Create budgets table
-    conn.execute(
+    tx.execute(
         "CREATE TABLE IF NOT EXISTS budgets (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             amount REAL NOT NULL,
@@ -111,17 +118,21 @@ pub fn run_migrations(conn: &Connection) -> Result<(), String> {
     .map_err(|e| format!("Failed to create budgets table: {}", e))?;
 
     // Create indexes for budgets table
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_budgets_category_id ON budgets(category_id);",
         [],
     )
     .map_err(|e| format!("Failed to create budgets category_id index: {}", e))?;
 
-    conn.execute(
+    tx.execute(
         "CREATE INDEX IF NOT EXISTS idx_budgets_month_year ON budgets(month, year);",
         [],
     )
     .map_err(|e| format!("Failed to create budgets month_year index: {}", e))?;
+
+    // Commit the transaction - all migrations succeed or none do
+    tx.commit()
+        .map_err(|e| format!("Failed to commit transaction: {}", e))?;
 
     println!("✅ All database migrations completed successfully!");
     Ok(())
