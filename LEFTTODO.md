@@ -20,4 +20,8 @@
     - [x] budget controller tests
     - [x] dashboard controller tests
     - [x] create settings controller and implement tests for it.
-- [ ] Implement the category management screen in the frontend (React).
+- [x] Implement the category management screen in the frontend (React).
+- [ ] Implement the transaction management screen in the frontend (React).
+- [ ] Implement the budget management screen in the frontend (React).
+- [ ] Implement the dashboard screen in the frontend (React).
+- [ ] Implement the report screen in the frontend (React).
