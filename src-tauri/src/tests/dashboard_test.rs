@@ -39,6 +39,9 @@ mod dashboard_test {
         let data = result.ok().unwrap();
         assert!(data.len() > 0, "Should have data for the past 7 days");
         // println!("Past 7 days data: {:?}", data);
+
+        // Teardown
+        teardown_test_db();
     }
 
     // ------------------------------------ test for get_recent_transactions ------------------------------------
@@ -59,6 +62,9 @@ mod dashboard_test {
             "Should return default 5 recent transactions"
         );
         // println!("Recent transactions: {:?}", transactions);
+
+        // Teardown
+        teardown_test_db();
     }
 
     #[test]
@@ -78,5 +84,8 @@ mod dashboard_test {
         );
         // assert_eq!(transactions.len(), 3, "Should return 3 recent transactions");
         println!("Recent transactions with limit 3: {:?}", transactions);
+        
+        // Teardown
+        teardown_test_db();
     }
 }
