@@ -19,5 +19,5 @@
     - [x] category controller tests
     - [x] budget controller tests
     - [x] dashboard controller tests
-    - [ ] create settings controller and implement tests for it.
+    - [x] create settings controller and implement tests for it.
 - [ ] Implement the frontend UI using React and Tailwind CSS.
