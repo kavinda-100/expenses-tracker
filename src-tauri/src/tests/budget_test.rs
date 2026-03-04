@@ -3,7 +3,7 @@ mod budget_test {
 
     use crate::{
         controllers::budget_controller::{add_budget, delete_budget, get_budgets, update_budget},
-        dtos::request_dtos::{AddBudRequestDto, GetAllBudgetRequestDto, UpdateBudgetRequestDto},
+        dtos::request_dtos::{AddBudgetRequestDto, GetAllBudgetRequestDto, UpdateBudgetRequestDto},
         tests::{setup_test_db, teardown_test_db},
     };
 
@@ -15,7 +15,7 @@ mod budget_test {
         let _conn = setup_test_db();
 
         // prepare test data
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: 100.0,
             month: 1,
             year: 2024,
@@ -38,7 +38,7 @@ mod budget_test {
         let _conn = setup_test_db();
 
         // prepare test data with invalid amount
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: -50.0, // Invalid amount
             month: 1,
             year: 2024,
@@ -65,7 +65,7 @@ mod budget_test {
         let _conn = setup_test_db();
 
         // prepare test data with invalid month
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: 100.0,
             month: 13, // Invalid month
             year: 2024,
@@ -92,7 +92,7 @@ mod budget_test {
         let _conn = setup_test_db();
 
         // prepare test data with invalid year
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: 100.0,
             month: 1,
             year: 1800, // Invalid year
@@ -122,7 +122,7 @@ mod budget_test {
         let conn = setup_test_db();
 
         // Insert a budget to be deleted
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: 100.0,
             month: 1,
             year: 2024,
@@ -220,7 +220,7 @@ mod budget_test {
         let conn = setup_test_db();
 
         // Insert a budget to be updated and get its ID
-        let new_budget = AddBudRequestDto {
+        let new_budget = AddBudgetRequestDto {
             amount: 100.0,
             month: 1,
             year: 2026,

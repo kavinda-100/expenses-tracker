@@ -3,7 +3,7 @@ use rusqlite::{params, Connection};
 use crate::{
     constants::DB_FILE_NAME,
     dtos::{
-        request_dtos::{AddBudRequestDto, GetAllBudgetRequestDto, UpdateBudgetRequestDto},
+        request_dtos::{AddBudgetRequestDto, GetAllBudgetRequestDto, UpdateBudgetRequestDto},
         response_dtos::BudgetResponseDto,
     },
 };
@@ -15,8 +15,8 @@ use crate::{
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn add_budget(new_budget: AddBudRequestDto) -> Result<String, String> {
-    let AddBudRequestDto {
+pub fn add_budget(new_budget: AddBudgetRequestDto) -> Result<String, String> {
+    let AddBudgetRequestDto {
         amount,
         month,
         year,

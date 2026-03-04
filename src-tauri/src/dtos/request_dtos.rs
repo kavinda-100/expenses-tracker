@@ -22,7 +22,7 @@ pub struct GetAllTransactionsWithCategoryRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AddBudRequestDto {
+pub struct AddBudgetRequestDto {
     pub amount: f64,
     pub month: u8, // 1-12
     pub year: i32,
