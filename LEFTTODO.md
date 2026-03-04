@@ -15,7 +15,8 @@
 - [x] Implement the backend logic for report screens (daily, weekly, monthly, yearly).
 - [ ] Implement test for the backend logic (controllers) using Rust's built-in testing framework.
     - [x] report controller tests
-    - [ ] transaction controller tests
-    - [ ] category controller tests
+    - [x] transaction controller tests
+    - [x] category controller tests
     - [ ] budget controller tests
+    - [ ] dashboard controller tests
 - [ ] Implement the frontend UI using React and Tailwind CSS.

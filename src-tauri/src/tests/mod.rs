@@ -1,3 +1,4 @@
+pub mod category_test;
 pub mod report_test;
 pub mod transaction_test;
 

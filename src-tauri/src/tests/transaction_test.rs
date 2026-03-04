@@ -2,8 +2,13 @@
 mod transaction_test {
     use rusqlite::Connection;
 
-    use crate::{controllers::transaction_controller::{add_transaction, delete_transaction, get_all_transactions_with_category}, dtos::request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto}, tests::{setup_test_db, teardown_test_db}};
-
+    use crate::{
+        controllers::transaction_controller::{
+            add_transaction, delete_transaction, get_all_transactions_with_category,
+        },
+        dtos::request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto},
+        tests::{setup_test_db, teardown_test_db},
+    };
 
     // -------------------------------- Tests for add_transaction function --------------------------------
     #[test]
@@ -145,8 +150,8 @@ mod transaction_test {
             .parse()
             .unwrap();
 
-            // Return the ID of the newly added transaction and the database connection for use in the delete test
-        (   added_transaction_id, _conn)
+        // Return the ID of the newly added transaction and the database connection for use in the delete test
+        (added_transaction_id, _conn)
     }
 
     #[test]
@@ -161,7 +166,10 @@ mod transaction_test {
         assert!(delete_result.is_ok());
         assert_eq!(
             delete_result.ok().unwrap(),
-            format!("Transaction with id {} deleted successfully", added_transaction_id)
+            format!(
+                "Transaction with id {} deleted successfully",
+                added_transaction_id
+            )
         );
 
         // Teardown
@@ -190,7 +198,7 @@ mod transaction_test {
     // --------------------------------------- Test for get_all_transactions_with_category ------------------------------
 
     #[test]
-    fn test_get_all_transactions_with_category(){
+    fn test_get_all_transactions_with_category() {
         // Setup
         let _conn = setup_test_db();
 
@@ -214,7 +222,7 @@ mod transaction_test {
     }
 
     #[test]
-    fn test_get_all_transactions_with_category_empty_dates(){
+    fn test_get_all_transactions_with_category_empty_dates() {
         // Setup
         let _conn = setup_test_db();
 

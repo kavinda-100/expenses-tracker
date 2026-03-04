@@ -3,7 +3,8 @@ use rusqlite::{params, Connection};
 use crate::{
     constants::DB_FILE_NAME,
     dtos::{
-        request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto}, response_dtos::TransactionWithCategoryResponseDto,
+        request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto},
+        response_dtos::TransactionWithCategoryResponseDto,
     },
 };
 
@@ -95,10 +96,13 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
  */
 #[tauri::command]
 pub fn get_all_transactions_with_category(
-    params: GetAllTransactionsWithCategoryRequestDto
+    params: GetAllTransactionsWithCategoryRequestDto,
 ) -> Result<Vec<TransactionWithCategoryResponseDto>, String> {
     // Destructure the GetAllTransactionsWithCategoryRequestDto to get the start and end dates
-    let GetAllTransactionsWithCategoryRequestDto { start_date, end_date } = params;
+    let GetAllTransactionsWithCategoryRequestDto {
+        start_date,
+        end_date,
+    } = params;
 
     // Validate input
     if start_date.trim().is_empty() || end_date.trim().is_empty() {
