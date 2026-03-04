@@ -21,7 +21,9 @@
     - [x] dashboard controller tests
     - [x] create settings controller and implement tests for it.
 - [x] Implement the category management screen in the frontend (React).
+    - [ ] prompt a confirmation dialog before deleting a category that has transactions associated with it.
 - [ ] Implement the transaction management screen in the frontend (React).
-- [ ] Implement the budget management screen in the frontend (React).
+- [x] Implement the budget management screen in the frontend (React).
+    - [ ] spent amount progress bar for each budget item.
 - [ ] Implement the dashboard screen in the frontend (React).
 - [ ] Implement the report screen in the frontend (React).
