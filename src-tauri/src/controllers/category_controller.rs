@@ -110,3 +110,36 @@ pub fn get_all_categories() -> Result<Vec<CategoryResponseDto>, String> {
     // Return the vector of categories
     Ok(categories)
 }
+
+/**
+ * Get all category names from the database
+ * @return Result<Vec<String>, String> - Ok(Vec<String>) if the category names were retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_categories_names() -> Result<Vec<String>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
+    // Open database connection and query category names
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Prepare the SQL statement to select category names
+    let mut stmt = conn
+        .prepare("SELECT name FROM categories")
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query and map the results to a vector of strings
+    let category_iter = stmt
+        .query_map([], |row| row.get(0))
+        .map_err(|e| format!("Failed to query category names: {}", e))?;
+
+    // Collect the results into a vector
+    let category_names: Vec<String> =
+        category_iter // Filter out any errors while mapping
+            .collect::<Result<Vec<String>, rusqlite::Error>>()
+            .map_err(|e| format!("Failed to map category names: {}", e))?;
+
+    // Return the vector of category names
+    Ok(category_names)
+}
