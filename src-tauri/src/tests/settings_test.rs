@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod settings_test {
     use crate::controllers::settings_controller::clear_all_data_from_database;
-    use crate::tests::setup_test_db;
+    use crate::tests::{setup_test_db, teardown_test_db};
 
     #[test]
     fn test_clear_all_data() {
@@ -28,5 +28,8 @@ mod settings_test {
         assert_eq!(category_count, 0, "Categories table should be empty");
         assert_eq!(transaction_count, 0, "Transactions table should be empty");
         assert_eq!(budget_count, 0, "Budgets table should be empty");
+
+        // teardown
+        teardown_test_db();
     }
 }
