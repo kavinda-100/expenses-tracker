@@ -119,6 +119,8 @@ mod budget_test {
      * Helper function to set up a budget in the database before each delete_budget test and return the inserted budget ID
      */
     fn before_each_delete_budget() -> i64 {
+        // Setup
+        let _conn = setup_test_db();
 
         // Insert a budget to be deleted
         let new_budget = AddBudgetRequestDto {

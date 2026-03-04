@@ -33,13 +33,14 @@ pub fn setup_test_db() -> Connection {
 #[allow(dead_code)]
 pub fn run_test_migrations(conn: &Connection) -> Result<(), String> {
     // run migrations to ensure the database schema is up to date
-    match run_migrations(&conn) {
-        Ok(_) => println!("Migrations ran successfully."),
-        Err(e) => {
-            eprintln!("Error running migrations: {}", e);
-            panic!("Failed to run database migrations.");
-        }
-    };
+    // match run_migrations(&conn) {
+    //     Ok(_) => println!("Migrations ran successfully."),
+    //     Err(e) => {
+    //         eprintln!("Error running migrations: {}", e);
+    //         panic!("Failed to run database migrations.");
+    //     }
+    // };
+    run_migrations(conn).map_err(|e| format!("Failed to run migrations: {}", e))?;
 
     Ok(())
 }
