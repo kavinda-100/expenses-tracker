@@ -8,8 +8,40 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { setCurrencyFormat, getCurrencyFormat } from "@/lib/utils";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import React from "react";
 
 const SettingScreen = () => {
+    const [selectedCurrency, setSelectedCurrency] =
+        React.useState<string>(getCurrencyFormat());
+
+    const currencyFormats = [
+        { code: "LKR", name: "Sri Lankan Rupee" },
+        { code: "USD", name: "US Dollar" },
+        { code: "EUR", name: "Euro" },
+        { code: "GBP", name: "British Pound" },
+        { code: "JPY", name: "Japanese Yen" },
+        { code: "AUD", name: "Australian Dollar" },
+        { code: "CAD", name: "Canadian Dollar" },
+        { code: "CHF", name: "Swiss Franc" },
+        { code: "CNY", name: "Chinese Yuan" },
+        { code: "SEK", name: "Swedish Krona" },
+        { code: "NZD", name: "New Zealand Dollar" },
+        { code: "INR", name: "Indian Rupee" },
+    ];
+
+    const handleCurrencyChange = (currency: string) => {
+        setSelectedCurrency(currency);
+        setCurrencyFormat(currency);
+    };
+
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6">
             {/* Header */}
@@ -39,6 +71,48 @@ const SettingScreen = () => {
                             </div>
                         </div>
                         <ModeToggle />
+                    </div>
+                </CardContent>
+            </Card>
+
+            {/* Currency & Localization Section */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">
+                        Currency & Localization
+                    </CardTitle>
+                    <CardDescription>
+                        Set your preferred currency format for financial display
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                            <div className="text-sm font-medium">
+                                Currency Format
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                                Choose your preferred currency for amounts
+                            </div>
+                        </div>
+                        <Select
+                            value={selectedCurrency}
+                            onValueChange={handleCurrencyChange}
+                        >
+                            <SelectTrigger className="w-50">
+                                <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {currencyFormats.map((currency) => (
+                                    <SelectItem
+                                        key={currency.code}
+                                        value={currency.code}
+                                    >
+                                        {currency.code} - {currency.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </CardContent>
             </Card>

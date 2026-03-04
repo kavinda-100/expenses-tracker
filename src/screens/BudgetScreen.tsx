@@ -32,13 +32,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-
-// Helper function to format numbers as currency
-const formatCurrency = (val: number) =>
-    new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-    }).format(val);
+import { formatCurrency } from "@/lib/utils";
 
 const BudgetScreen = () => {
     const [categoryNames, setCategoryNames] = React.useState<
