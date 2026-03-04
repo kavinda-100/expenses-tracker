@@ -16,6 +16,12 @@ pub struct TransactionRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetAllTransactionsWithCategoryRequestDto {
+    pub start_date: String, // ISO 8601 format
+    pub end_date: String,   // ISO 8601 format
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BudgetRequestDto {
     pub amount: f64,
     pub month: u8, // 1-12

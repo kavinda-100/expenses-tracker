@@ -3,7 +3,7 @@ use rusqlite::{params, Connection};
 use crate::{
     constants::DB_FILE_NAME,
     dtos::{
-        request_dtos::TransactionRequestDto, response_dtos::TransactionWithCategoryResponseDto,
+        request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto}, response_dtos::TransactionWithCategoryResponseDto,
     },
 };
 
@@ -89,16 +89,22 @@ pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
 
 /**
  * Get all transactions from the database in a specific date range with category information
- * @param start_date - The start date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-01")
- * @param end_date - The end date of the range (inclusive) in ISO 8601 format (e.g., "2024-01-31")
+ * @param params - The request parameters containing the start and end dates for filtering transactions, represented as a GetAllTransactionsWithCategoryRequestDto (ISO 8601 format)
  * @return Result<Vec<TransactionWithCategory>, String> - Ok(Vec<TransactionWithCategory>) if the transactions were retrieved successfully,
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
 pub fn get_all_transactions_with_category(
-    start_date: String,
-    end_date: String,
+    params: GetAllTransactionsWithCategoryRequestDto
 ) -> Result<Vec<TransactionWithCategoryResponseDto>, String> {
+    // Destructure the GetAllTransactionsWithCategoryRequestDto to get the start and end dates
+    let GetAllTransactionsWithCategoryRequestDto { start_date, end_date } = params;
+
+    // Validate input
+    if start_date.trim().is_empty() || end_date.trim().is_empty() {
+        return Err("Start date and end date cannot be empty".to_string());
+    }
+
     // Open database connection
     let conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;

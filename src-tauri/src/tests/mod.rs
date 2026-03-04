@@ -1,4 +1,5 @@
 pub mod report_test;
+pub mod transaction_test;
 
 use rusqlite::Connection;
 use std::fs;
