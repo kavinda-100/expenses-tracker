@@ -30,7 +30,7 @@
 
 ---
 
-## � Download
+## 📥 Download
 
 ### Pre-built Releases
 
@@ -48,7 +48,7 @@ Available for:
 
 ---
 
-## �🛠️ Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 
@@ -380,10 +380,6 @@ Manages all data persistence using **SQLite**:
 - **`migrations.rs`** - Schema version control
     - Automatic database initialization
     - Safe schema upgrades
-      Testing (Backend)
-      cd src-tauri
-      make test # Run all backend tests
-      cargo test --lib # Alternative test command
 
 # - Data integrity enforcement
 
@@ -446,7 +442,7 @@ The backend has **comprehensive test coverage** ensuring reliability and correct
 
 **Test Results:**
 
-```
+```text
 ✅ 37 tests passed | 0 failed
 📊 100% pass rate
 ⏱️  Execution time: 7.74s
