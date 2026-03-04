@@ -2,7 +2,7 @@
 mod category_test {
 
     use crate::{
-        controllers::category_controller::{add_category, delete_category, get_all_categories},
+        controllers::category_controller::{add_category, delete_category, get_all_categories, get_categories_names},
         dtos::request_dtos::CategoryRequestDto,
         tests::{setup_test_db, teardown_test_db},
     };
@@ -167,6 +167,27 @@ mod category_test {
         let categories = result.ok().unwrap();
         // Assuming we have categories.
         assert!(categories.len() > 0);
+
+        // Teardown
+        teardown_test_db();
+    }
+
+
+    // ------------------------------------ test for get_categories_names -------------------------------------
+    #[test]
+    fn test_get_categories_names() {
+        // set up
+        let _conn = setup_test_db();
+
+        // call the get_categories_names function to retrieve all category names
+        let result = get_categories_names();
+
+        // assert that the category names were retrieved successfully and that the expected number of category names is returned
+        assert!(result.is_ok());
+
+        let category_names = result.ok().unwrap();
+        // Assuming we have category names.
+        assert!(category_names.len() > 0);
 
         // Teardown
         teardown_test_db();

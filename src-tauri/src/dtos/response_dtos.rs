@@ -4,8 +4,15 @@ use serde::{Deserialize, Serialize};
 pub struct CategoryResponseDto {
     pub id: i64,
     pub name: String,
+    #[serde(rename = "type")]
     pub type_: String,      // "INCOME" or "EXPENSE"
     pub created_at: String, // ISO 8601 format
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetCategoryNamesResponseDto {
+    pub id: i64,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,6 +32,7 @@ pub struct TransactionWithCategoryResponseDto {
     pub amount: f64,
     pub description: Option<String>,
     pub date: String,  // ISO 8601 format
+    #[serde(rename = "type")]
     pub type_: String, // "INCOME" or "EXPENSE"
     pub category_id: i64,
     pub category_name: String,
@@ -50,6 +58,7 @@ pub struct RecentTransactionsResponseDto {
     pub name: String,
     pub amount: f64,
     pub date: String,
+    #[serde(rename = "type")]
     pub type_: String,
 }
 

@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CategoryRequestDto {
     pub name: String,
+    #[serde(rename = "type")]
     pub type_: String, // "INCOME" or "EXPENSE"
 }
 
@@ -11,6 +12,7 @@ pub struct TransactionRequestDto {
     pub amount: f64,
     pub description: Option<String>,
     pub date: String,  // ISO 8601 format
+    #[serde(rename = "type")]
     pub type_: String, // "INCOME" or "EXPENSE"
     pub category_id: i64,
 }
