@@ -10,16 +10,25 @@ use crate::constants::DB_FILE_NAME;
 #[tauri::command]
 pub fn clear_all_data_from_database() -> Result<String, String> {
     // Open database connection
-    let conn =
+    let mut conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
 
+    // Begin a transaction so that all deletes are atomic
+    let tx = conn
+        .transaction()
+        .map_err(|e| format!("Failed to begin transaction: {}", e))?;
+
     // Clear all data from the transactions, categories, and budgets tables
-    conn.execute("DELETE FROM transactions", params![])
+    tx.execute("DELETE FROM transactions", params![])
         .map_err(|e| format!("Failed to clear transactions: {}", e))?;
-    conn.execute("DELETE FROM categories", params![])
+    tx.execute("DELETE FROM categories", params![])
         .map_err(|e| format!("Failed to clear categories: {}", e))?;
-    conn.execute("DELETE FROM budgets", params![])
+    tx.execute("DELETE FROM budgets", params![])
         .map_err(|e| format!("Failed to clear budgets: {}", e))?;
+
+    // Commit the transaction
+    tx.commit()
+        .map_err(|e| format!("Failed to commit transaction: {}", e))?;
 
     Ok("All data cleared successfully".to_string())
 }
