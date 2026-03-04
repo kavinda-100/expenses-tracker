@@ -119,7 +119,6 @@ mod budget_test {
      * Helper function to set up a budget in the database before each delete_budget test and return the inserted budget ID
      */
     fn before_each_delete_budget() -> i64 {
-        let conn = setup_test_db();
 
         // Insert a budget to be deleted
         let new_budget = AddBudgetRequestDto {
@@ -134,17 +133,17 @@ mod budget_test {
         // Assert that the transaction was added successfully and extract the ID from the success message
         assert!(result.is_ok());
         // The success message is expected to be in the format "Budget added successfully with id: {id}", so we split the string to extract the ID
-        // let added_budget_id: i64 = result
-        //     .ok()
-        //     .unwrap()
-        //     .split("id: ")
-        //     .nth(1)
-        //     .unwrap()
-        //     .parse()
-        //     .unwrap();
+        let added_budget_id: i64 = result
+            .ok()
+            .unwrap()
+            .split("id: ")
+            .nth(1)
+            .unwrap()
+            .parse()
+            .unwrap();
 
         // Alternatively, we can directly query the database to get the last inserted ID since add_budget returns the last inserted ID in the success message.
-        conn.last_insert_rowid()
+        added_budget_id
     }
 
     #[test]
