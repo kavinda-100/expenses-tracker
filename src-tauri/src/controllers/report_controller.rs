@@ -21,8 +21,7 @@ pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, St
     let db_file = get_db_file_path();
 
     // Open database connection and query for total income and expenses
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total expenses grouped by category
     let mut stmt = conn
@@ -67,8 +66,7 @@ pub fn get_monthly_overview(
     let db_file = get_db_file_path();
 
     // Open database connection and query for total income and expenses
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income and expenses for the specified month and year
     let mut stmt = conn
@@ -113,8 +111,7 @@ pub fn get_yearly_overview(
     let db_file = get_db_file_path();
 
     // Open database connection and query for total income and expenses
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query total income and expenses for each month in the specified year
     let mut stmt = conn
@@ -164,8 +161,7 @@ pub fn get_last_month_habits(
     let db_file = get_db_file_path();
 
     // Open database connection
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get total expenses grouped by category for the specified month
     let mut stmt = conn
@@ -219,8 +215,7 @@ pub fn get_last_year_habits(
     let db_file = get_db_file_path();
 
     // Open database connection
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get total expenses grouped by category for the specified year
     let mut stmt = conn

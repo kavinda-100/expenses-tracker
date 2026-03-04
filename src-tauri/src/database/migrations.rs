@@ -1,6 +1,6 @@
 use rusqlite::Connection;
 
-use crate::{helpers::helper::get_db_file_path};
+use crate::helpers::helper::get_db_file_path;
 
 /**
  * Connect to the SQLite database

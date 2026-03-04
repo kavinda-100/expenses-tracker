@@ -1,6 +1,6 @@
 use rusqlite::{params, Connection};
 
-use crate::{helpers::helper::get_db_file_path};
+use crate::helpers::helper::get_db_file_path;
 
 /**
  * Clear all data from the database, including transactions, categories, and budgets
@@ -11,7 +11,7 @@ use crate::{helpers::helper::get_db_file_path};
 pub fn clear_all_data_from_database() -> Result<String, String> {
     // Get the path to the database file
     let db_file = get_db_file_path();
-    
+
     // Open database connection
     let mut conn =
         Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;

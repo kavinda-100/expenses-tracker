@@ -1,7 +1,7 @@
-use rusqlite::{params, Connection};
 use crate::dtos::request_dtos::CategoryRequestDto;
 use crate::dtos::response_dtos::CategoryResponseDto;
 use crate::helpers::helper::get_db_file_path;
+use rusqlite::{params, Connection};
 
 /**
  * Add a new category to the database
@@ -13,7 +13,7 @@ use crate::helpers::helper::get_db_file_path;
 pub fn add_category(new_category: CategoryRequestDto) -> Result<String, String> {
     // Get the path to the database file
     let db_file = get_db_file_path();
-    
+
     let CategoryRequestDto { name, type_ } = new_category;
 
     // Validate input
@@ -25,8 +25,7 @@ pub fn add_category(new_category: CategoryRequestDto) -> Result<String, String> 
     }
 
     // Open database connection and insert category
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Execute the insert statement and handle any errors
     conn.execute(
@@ -54,8 +53,7 @@ pub fn delete_category(category_id: i64) -> Result<String, String> {
     let db_file = get_db_file_path();
 
     // Open database connection and delete category
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Execute the delete statement and check how many rows were affected
     let rows_affected = conn
@@ -84,8 +82,7 @@ pub fn get_all_categories() -> Result<Vec<CategoryResponseDto>, String> {
     let db_file = get_db_file_path();
 
     // Open database connection and query categories
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Prepare the SQL statement to select all categories
     let mut stmt = conn

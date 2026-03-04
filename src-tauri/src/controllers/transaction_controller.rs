@@ -4,7 +4,8 @@ use crate::{
     dtos::{
         request_dtos::{GetAllTransactionsWithCategoryRequestDto, TransactionRequestDto},
         response_dtos::TransactionWithCategoryResponseDto,
-    }, helpers::helper::get_db_file_path,
+    },
+    helpers::helper::get_db_file_path,
 };
 
 /**
@@ -39,8 +40,7 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
     }
 
     // Open database connection and insert transaction
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Example of inserting a transaction (you would replace this with actual transaction data)
     conn.execute(
@@ -69,10 +69,9 @@ pub fn add_transaction(new_transaction: TransactionRequestDto) -> Result<String,
 pub fn delete_transaction(transaction_id: i64) -> Result<String, String> {
     // Get the path to the database file
     let db_file = get_db_file_path();
-    
+
     // Open database connection and delete transaction
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Execute the delete statement and check how many rows were affected
     let rows_affected = conn
@@ -118,8 +117,7 @@ pub fn get_all_transactions_with_category(
     }
 
     // Open database connection
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Query to get transactions with category information in the specified date range
     let mut stmt = conn

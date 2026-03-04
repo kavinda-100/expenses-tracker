@@ -84,7 +84,7 @@ mod dashboard_test {
         );
         // assert_eq!(transactions.len(), 3, "Should return 3 recent transactions");
         println!("Recent transactions with limit 3: {:?}", transactions);
-        
+
         // Teardown
         teardown_test_db();
     }

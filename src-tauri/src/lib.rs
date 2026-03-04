@@ -23,8 +23,8 @@ mod constants;
 mod controllers;
 mod database;
 mod dtos;
-mod tests;
 mod helpers;
+mod tests;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]

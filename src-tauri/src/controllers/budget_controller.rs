@@ -38,8 +38,7 @@ pub fn add_budget(new_budget: AddBudgetRequestDto) -> Result<String, String> {
     }
 
     // Open database connection and insert budget
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     conn.execute(
         "INSERT INTO budgets (amount, month, year, category_id) VALUES (?1, ?2, ?3, ?4)",
@@ -64,8 +63,7 @@ pub fn delete_budget(budget_id: i64) -> Result<String, String> {
     let db_file = get_db_file_path();
 
     // Open database connection and delete budget
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     let rows_affected = conn
         .execute("DELETE FROM budgets WHERE id = ?1", params![budget_id])
@@ -91,8 +89,7 @@ pub fn get_budgets(params: GetAllBudgetRequestDto) -> Result<Vec<BudgetResponseD
     let db_file = get_db_file_path();
 
     // Open database connection and retrieve budgets
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Prepare the SQL statement to select budgets and categories for the specified month and year
     let mut stmt = conn
@@ -146,8 +143,7 @@ pub fn update_budget(updated_budget: UpdateBudgetRequestDto) -> Result<String, S
 
     // Open database connection and update budget
     let db_file = get_db_file_path();
-    let conn =
-        Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
     // Execute the update statement and check how many rows were affected
     let rows_affected = conn
