@@ -16,3 +16,10 @@ export const createCategoryZodSchema = z.object({
 });
 
 export type CreateCategoryInputType = z.infer<typeof createCategoryZodSchema>;
+
+export const getCategoryNamesZodSchema = z.object({
+    id: z.string().min(1, "Category ID is required"),
+    name: z.string().min(1, "Category name is required"),
+});
+
+export type GetCategoryNamesType = z.infer<typeof getCategoryNamesZodSchema>;

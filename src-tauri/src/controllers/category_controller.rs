@@ -1,4 +1,4 @@
-use crate::dtos::request_dtos::CategoryRequestDto;
+use crate::dtos::{request_dtos::CategoryRequestDto, response_dtos::GetCategoryNamesResponseDto};
 use crate::dtos::response_dtos::CategoryResponseDto;
 use crate::helpers::helper::get_db_file_path;
 use rusqlite::{params, Connection};
@@ -113,11 +113,11 @@ pub fn get_all_categories() -> Result<Vec<CategoryResponseDto>, String> {
 
 /**
  * Get all category names from the database
- * @return Result<Vec<String>, String> - Ok(Vec<String>) if the category names were retrieved successfully,
+ * @return Result<Vec<GetCategoryNamesResponseDto>, String> - Ok(Vec<GetCategoryNamesResponseDto>) if the category names were retrieved successfully,
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn get_categories_names() -> Result<Vec<String>, String> {
+pub fn get_categories_names() -> Result<Vec<GetCategoryNamesResponseDto>, String> {
     // Get the path to the database file
     let db_file = get_db_file_path();
 
@@ -126,18 +126,23 @@ pub fn get_categories_names() -> Result<Vec<String>, String> {
 
     // Prepare the SQL statement to select category names
     let mut stmt = conn
-        .prepare("SELECT name FROM categories")
+        .prepare("SELECT id, name FROM categories")
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
     // Execute the query and map the results to a vector of strings
     let category_iter = stmt
-        .query_map([], |row| row.get(0))
+        .query_map([], |row| {
+            Ok(GetCategoryNamesResponseDto {
+                id: row.get(0)?,
+                name: row.get(1)?,
+            })
+        })
         .map_err(|e| format!("Failed to query category names: {}", e))?;
 
     // Collect the results into a vector
-    let category_names: Vec<String> =
+    let category_names: Vec<GetCategoryNamesResponseDto> =
         category_iter // Filter out any errors while mapping
-            .collect::<Result<Vec<String>, rusqlite::Error>>()
+            .collect::<Result<Vec<GetCategoryNamesResponseDto>, rusqlite::Error>>()
             .map_err(|e| format!("Failed to map category names: {}", e))?;
 
     // Return the vector of category names

@@ -10,6 +10,12 @@ pub struct CategoryResponseDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GetCategoryNamesResponseDto {
+    pub id: i64,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BudgetResponseDto {
     pub id: i64,
     pub amount: f64,
