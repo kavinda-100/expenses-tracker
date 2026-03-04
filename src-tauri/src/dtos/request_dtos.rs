@@ -22,7 +22,7 @@ pub struct GetAllTransactionsWithCategoryRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BudgetRequestDto {
+pub struct AddBudRequestDto {
     pub amount: f64,
     pub month: u8, // 1-12
     pub year: i32,
@@ -30,7 +30,7 @@ pub struct BudgetRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AllBudgetRequestDto {
+pub struct GetAllBudgetRequestDto {
     pub month: u8, // 1-12
     pub year: i32,
 }

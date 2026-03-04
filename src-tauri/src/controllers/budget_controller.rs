@@ -3,7 +3,7 @@ use rusqlite::{params, Connection};
 use crate::{
     constants::DB_FILE_NAME,
     dtos::{
-        request_dtos::{AllBudgetRequestDto, BudgetRequestDto, UpdateBudgetRequestDto},
+        request_dtos::{AddBudRequestDto, GetAllBudgetRequestDto, UpdateBudgetRequestDto},
         response_dtos::BudgetResponseDto,
     },
 };
@@ -15,8 +15,8 @@ use crate::{
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn add_budget(new_budget: BudgetRequestDto) -> Result<String, String> {
-    let BudgetRequestDto {
+pub fn add_budget(new_budget: AddBudRequestDto) -> Result<String, String> {
+    let AddBudRequestDto {
         amount,
         month,
         year,
@@ -80,14 +80,21 @@ pub fn delete_budget(budget_id: i64) -> Result<String, String> {
  * otherwise an error message is returned as a String
  */
 #[tauri::command]
-pub fn get_budgets(params: AllBudgetRequestDto) -> Result<Vec<BudgetResponseDto>, String> {
+pub fn get_budgets(params: GetAllBudgetRequestDto) -> Result<Vec<BudgetResponseDto>, String> {
     // Open database connection and retrieve budgets
     let conn =
         Connection::open(DB_FILE_NAME).map_err(|e| format!("Failed to open database: {}", e))?;
 
-    // Prepare the SQL statement to select budgets for the specified month and year
+    // Prepare the SQL statement to select budgets and categories for the specified month and year
     let mut stmt = conn
-        .prepare("SELECT id, amount, month, year, category_id, created_at FROM budgets WHERE month = ?1 AND year = ?2")
+        .prepare(
+            "
+            SELECT b.id, b.amount, b.month, b.year, b.category_id, c.name, b.created_at
+            FROM budgets b
+            JOIN categories c ON b.category_id = c.id
+            WHERE b.month = ?1 AND b.year = ?2
+        ",
+        )
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
     // Execute the query and map the results to BudgetResponseDto structs
@@ -99,7 +106,8 @@ pub fn get_budgets(params: AllBudgetRequestDto) -> Result<Vec<BudgetResponseDto>
                 month: row.get(2)?,
                 year: row.get(3)?,
                 category_id: row.get(4)?,
-                created_at: row.get(5)?,
+                category_name: row.get(5)?,
+                created_at: row.get(6)?,
             })
         })
         .map_err(|e| format!("Failed to query budgets: {}", e))?;
