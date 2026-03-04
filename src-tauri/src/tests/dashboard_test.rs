@@ -1,8 +1,10 @@
 #[cfg(test)]
 mod dashboard_test {
+    use crate::controllers::dashboard_controller::{
+        get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
+    };
     use crate::tests::{setup_test_db, teardown_test_db};
-    use crate::controllers::dashboard_controller::{get_dashboard_overview, get_past_seven_days_data, get_recent_transactions};
-    
+
     // -------------------------------- tests for get_dashboard_overview --------------------------------
     #[test]
     fn test_get_dashboard_overview() {
@@ -51,7 +53,11 @@ mod dashboard_test {
         // Assert the expected outcome
         assert!(result.is_ok());
         let transactions = result.ok().unwrap();
-        assert_eq!(transactions.len(), 5, "Should return default 5 recent transactions");
+        assert_eq!(
+            transactions.len(),
+            5,
+            "Should return default 5 recent transactions"
+        );
         // println!("Recent transactions: {:?}", transactions);
     }
 
@@ -66,7 +72,10 @@ mod dashboard_test {
         // Assert the expected outcome
         assert!(result.is_ok());
         let transactions = result.ok().unwrap();
-        assert!(transactions.len() > 0, "Should return recent transactions with limit 3");
+        assert!(
+            transactions.len() > 0,
+            "Should return recent transactions with limit 3"
+        );
         // assert_eq!(transactions.len(), 3, "Should return 3 recent transactions");
         println!("Recent transactions with limit 3: {:?}", transactions);
     }

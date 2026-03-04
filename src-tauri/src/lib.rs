@@ -11,6 +11,7 @@ use crate::{
             get_expense_by_category, get_last_month_habits, get_last_year_habits,
             get_monthly_overview, get_yearly_overview,
         },
+        settings_controller::clear_all_data_from_database,
         transaction_controller::{
             add_transaction, delete_transaction, get_all_transactions_with_category,
         },
@@ -71,7 +72,8 @@ pub fn run() {
             get_monthly_overview,
             get_yearly_overview,
             get_last_month_habits,
-            get_last_year_habits
+            get_last_year_habits,
+            clear_all_data_from_database
         ])
         .setup(|app| {
             // Set minimum window size constraints

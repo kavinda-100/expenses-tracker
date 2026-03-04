@@ -1,8 +1,9 @@
 pub mod budget_test;
 pub mod category_test;
-pub mod report_test;
-pub mod transaction_test;
 pub mod dashboard_test;
+pub mod report_test;
+pub mod settings_test;
+pub mod transaction_test;
 
 use rusqlite::Connection;
 use std::fs;
