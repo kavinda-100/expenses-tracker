@@ -15,6 +15,7 @@ export const budgetZodSchema = z.object({
         .max(2100, "Year must be a valid year"),
     category_id: z.number().int().positive("Category ID must be positive"),
     category_name: z.string().min(1, "Category name is required"),
+    spent_amount: z.number().nonnegative("Spent amount cannot be negative"),
     created_at: z.string().min(1, "Creation date is required"),
 });
 

@@ -15,6 +15,7 @@ import {
     Wallet,
     RefreshCcwIcon,
     LoaderIcon,
+    TrashIcon,
 } from "lucide-react";
 import {
     Select,
@@ -24,17 +25,26 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import {
     Card,
     CardContent,
     CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
+import ScreenHeader from "@/components/ScreenHeader";
 
 const BudgetScreen = () => {
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
     const [categoryNames, setCategoryNames] = React.useState<
         GetCategoryNamesType[]
     >([]);
@@ -74,6 +84,15 @@ const BudgetScreen = () => {
         mutationAsync: createBudgetAsync,
     } = useTauriMutation<string, string>();
 
+    // tauri mutation for deleting a budget
+    const {
+        data: deleteBudgetData,
+        error: deleteBudgetError,
+        isError: isDeleteBudgetError,
+        loading: isDeleteBudgetLoading,
+        mutationAsync: deleteBudgetAsync,
+    } = useTauriMutation<string, string>();
+
     // Fetch category names on component mount only
     React.useEffect(() => {
         queryCategoryNamesAsync("get_categories_names");
@@ -93,7 +112,12 @@ const BudgetScreen = () => {
                 .array()
                 .safeParse(categoryNamesData);
             if (parsedCategoryNames.success) {
-                setCategoryNames(parsedCategoryNames.data);
+                // filter out only EXPENSE type categories for budgeting
+                setCategoryNames(
+                    parsedCategoryNames.data.filter(
+                        (c) => c.type === "EXPENSE",
+                    ),
+                );
             } else {
                 console.error(
                     "Category names data validation failed:",
@@ -156,6 +180,25 @@ const BudgetScreen = () => {
         setAmount(0);
     };
 
+    // delete budget function (opens confirmation dialog)
+    const handleDeleteBudget = async (budgetId: number) => {
+        // For now, just open the confirmation dialog
+        await deleteBudgetAsync("delete_budget", {
+            budgetId: budgetId,
+        });
+
+        if (
+            !isDeleteBudgetLoading &&
+            !isDeleteBudgetError &&
+            deleteBudgetData
+        ) {
+            // After deleting a budget, refetch the budgets to update the list
+            await refetchBudgetsAsync();
+            // close the confirmation dialog
+            setIsDeleteDialogOpen(false);
+        }
+    };
+
     // Get current month and year for display
     const currentDate = new Date();
     const monthName = currentDate.toLocaleString("en-US", { month: "long" });
@@ -164,15 +207,10 @@ const BudgetScreen = () => {
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Budgets</h1>
-                <p className="text-sm text-muted-foreground">
-                    Set spending limits and track your progress for {monthName}{" "}
-                    {year}
-                </p>
-            </div>
-
-            <Separator />
+            <ScreenHeader
+                title="Budgets"
+                description={`Set spending limits and track your progress for ${monthName} - ${year}`}
+            />
 
             {/* Error Messages */}
             {isCategoryNamesError && categoryNamesError && (
@@ -226,8 +264,26 @@ const BudgetScreen = () => {
                         </Card>
                     ) : (
                         budget.map((b) => {
-                            // TODO: Add transaction data to calculate actual spending
-                            // For now, showing budget limits only
+                            const percentage =
+                                (b.spent_amount / b.amount) * 100;
+                            const percentageRounded = Math.round(percentage);
+
+                            // Determine color based on percentage
+                            const getProgressColor = (pct: number) => {
+                                if (pct >= 100) return "bg-red-500";
+                                if (pct >= 75) return "bg-orange-400";
+                                if (pct >= 50) return "bg-yellow-400";
+                                if (pct >= 25) return "bg-green-500";
+                                return "bg-emerald-400";
+                            };
+
+                            const getStatusColor = (pct: number) => {
+                                if (pct >= 100) return "text-red-500";
+                                if (pct >= 75) return "text-orange-500";
+                                if (pct >= 50) return "text-yellow-600";
+                                return "text-green-600";
+                            };
+
                             return (
                                 <Card key={b.id}>
                                     <CardHeader className="pb-3">
@@ -235,19 +291,146 @@ const BudgetScreen = () => {
                                             <CardTitle className="text-lg">
                                                 {b.category_name}
                                             </CardTitle>
-                                            <span className="text-sm font-medium">
-                                                {formatCurrency(b.amount)} limit
+                                            <span
+                                                className={`text-sm font-bold ${getStatusColor(percentage)}`}
+                                            >
+                                                {percentageRounded}% used
                                             </span>
                                         </div>
                                     </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                            <span>
-                                                Budget for {monthName} {year}
-                                            </span>
-                                            <span className="text-xs">
-                                                ID: {b.id}
-                                            </span>
+                                    <CardContent className="space-y-3">
+                                        {/* Progress Bar */}
+                                        <div className="space-y-1.5">
+                                            <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                                                <div
+                                                    className={`h-full transition-all duration-300 ${getProgressColor(percentage)}`}
+                                                    style={{
+                                                        width: `${Math.min(percentage, 100)}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Amount Details */}
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-muted-foreground text-xs">
+                                                    Spent
+                                                </span>
+                                                <span className="font-semibold">
+                                                    {formatCurrency(
+                                                        b.spent_amount,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="text-muted-foreground text-xs">
+                                                -
+                                            </div>
+                                            <div className="flex flex-col gap-0.5 items-end">
+                                                <span className="text-muted-foreground text-xs">
+                                                    Budget
+                                                </span>
+                                                <span className="font-semibold">
+                                                    {formatCurrency(b.amount)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Remaining/Over Budget */}
+                                        <div className="pt-1 border-t flex justify-between items-center">
+                                            {b.spent_amount <= b.amount ? (
+                                                <p className="text-xs text-muted-foreground">
+                                                    <span className="font-medium text-green-600">
+                                                        {formatCurrency(
+                                                            b.amount -
+                                                                b.spent_amount,
+                                                        )}
+                                                    </span>{" "}
+                                                    remaining
+                                                </p>
+                                            ) : (
+                                                <p className="text-xs text-muted-foreground">
+                                                    <span className="font-medium text-red-600">
+                                                        {formatCurrency(
+                                                            b.spent_amount -
+                                                                b.amount,
+                                                        )}
+                                                    </span>{" "}
+                                                    over budget
+                                                </p>
+                                            )}
+
+                                            {/* delete budget */}
+                                            <Dialog
+                                                open={isDeleteDialogOpen}
+                                                onOpenChange={
+                                                    setIsDeleteDialogOpen
+                                                }
+                                            >
+                                                <DialogTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-destructive cursor-pointer"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Delete Budget
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Are you sure you
+                                                            want to delete this
+                                                            budget? This action
+                                                            cannot be undone.
+                                                        </DialogDescription>
+                                                        {isDeleteBudgetError &&
+                                                            deleteBudgetError && (
+                                                                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20 mt-4">
+                                                                    <AlertCircle className="h-4 w-4" />
+                                                                    <p className="text-xs font-medium text-pretty">
+                                                                        {
+                                                                            deleteBudgetError
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                    </DialogHeader>
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() =>
+                                                                setIsDeleteDialogOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                isDeleteBudgetLoading
+                                                            }
+                                                        >
+                                                            No, Cancel
+                                                        </Button>
+                                                        <Button
+                                                            variant="destructive"
+                                                            disabled={
+                                                                isDeleteBudgetLoading
+                                                            }
+                                                            onClick={() =>
+                                                                handleDeleteBudget(
+                                                                    b.id,
+                                                                )
+                                                            }
+                                                        >
+                                                            {isDeleteBudgetLoading
+                                                                ? "Deleting..."
+                                                                : "Yes, Delete"}
+                                                        </Button>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
                                         </div>
                                     </CardContent>
                                 </Card>

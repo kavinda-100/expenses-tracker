@@ -2,7 +2,9 @@
 mod category_test {
 
     use crate::{
-        controllers::category_controller::{add_category, delete_category, get_all_categories, get_categories_names},
+        controllers::category_controller::{
+            add_category, delete_category, get_all_categories, get_categories_names,
+        },
         dtos::request_dtos::CategoryRequestDto,
         tests::{setup_test_db, teardown_test_db},
     };
@@ -171,7 +173,6 @@ mod category_test {
         // Teardown
         teardown_test_db();
     }
-
 
     // ------------------------------------ test for get_categories_names -------------------------------------
     #[test]
