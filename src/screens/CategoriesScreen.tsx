@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, AlertCircle, SquarePenIcon } from "lucide-react";
+import { Trash2, Plus, AlertCircle, SquarePenIcon, X } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -17,6 +17,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     CategoryType,
@@ -27,9 +34,12 @@ import { Type } from "@/zod";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
 import ScreenHeader from "@/components/ScreenHeader";
-import { confirm } from "@tauri-apps/plugin-dialog";
 
 const CategoriesScreen = () => {
+    const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+    const [categoryIdToDelete, setCategoryIdToDelete] = React.useState<
+        number | null
+    >(null);
     const [name, setName] = React.useState("");
     const [type, setType] = React.useState<Type>("EXPENSE");
     const [formError, setFormError] = React.useState<string | null>(null);
@@ -119,293 +129,335 @@ const CategoriesScreen = () => {
         setType("EXPENSE");
     };
 
-    // confirmation dialog before deleting a category since this action cannot be undone
-    // and will also delete all transactions associated with the category,
-    // so we want to make sure the user knows what they are doing before proceeding with the deletion.
-    const askDeleteConfirmation = async () => {
-        const message = `
-                        Are you sure you want to delete this category? This action cannot be undone.
-                        All transactions associated with this category will also be deleted.
-                        Please confirm that you want to proceed with deleting this category.
-                        (We recommend rename the category name to something like "Deleted - Old Category Name" instead of deleting it if 
-                        you have transactions associated with it and want to keep them for historical records)
-                        `;
-        const confirmation = await confirm(message, {
-            title: "Delete Category",
-            kind: "warning",
-        });
-        return confirmation;
-    };
-
     // handler for deleting a category
-    const handleDeleteCategory = async (id: number) => {
-        // ask for confirmation before deleting a category since this action cannot be undone
-        const confirmed = await askDeleteConfirmation();
-        if (!confirmed) return;
-
-        await deleteCategoryAsync("delete_category", { categoryId: id });
+    const handleDeleteCategory = async () => {
+        if (!categoryIdToDelete) return;
+        await deleteCategoryAsync("delete_category", {
+            categoryId: categoryIdToDelete,
+        });
         // refetch categories after deleting one
         await refetchCategories();
+        // close the delete confirmation dialog and reset the categoryIdToDelete state
+        setOpenDeleteDialog(false);
+        setCategoryIdToDelete(null);
     };
 
     return (
-        <div className="w-full h-full flex flex-col gap-6 p-6">
-            {/* Header */}
-            <ScreenHeader
-                title="Categories"
-                description="Organize your transactions with custom income and expense
-                    categories"
-            />
-
-            {/* Error Message for fetching categories */}
-            {isCategoriesError && categoriesError && (
-                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
-                    <AlertCircle className="h-4 w-4" />
-                    <p className="text-sm font-medium">{categoriesError}</p>
-                </div>
-            )}
-
-            {/* Main Content Grid */}
-            <div className="grid gap-6 md:grid-cols-2">
-                {/* Add category form */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg">
-                            Add New Category
-                        </CardTitle>
-                        <CardDescription>
-                            Create a custom category for your transactions
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <form
-                            onSubmit={handleAddCategory}
-                            className="space-y-4"
-                        >
-                            {/* Form Error Message */}
-                            {formError && (
-                                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <p className="text-xs font-medium">
-                                        {formError}
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Create Category Error Message */}
-                            {isCreateCategoryError && createCategoryError && (
-                                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
-                                    <AlertCircle className="h-4 w-4" />
-                                    <p className="text-xs font-medium">
-                                        {createCategoryError}
-                                    </p>
-                                </div>
-                            )}
-
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Name</Label>
-                                <Input
-                                    id="name"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="e.g. Groceries, Salary"
-                                    disabled={isCreateCategoryLoading}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="type">Type</Label>
-                                <Select
-                                    value={type}
-                                    onValueChange={(
-                                        val: "INCOME" | "EXPENSE",
-                                    ) => setType(val)}
-                                    disabled={isCreateCategoryLoading}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="EXPENSE">
-                                            Expense
-                                        </SelectItem>
-                                        <SelectItem value="INCOME">
-                                            Income
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <Button
-                                type="submit"
-                                disabled={
-                                    isCreateCategoryLoading ||
-                                    name.trim() === ""
-                                }
-                                className="w-full"
-                            >
-                                {isCreateCategoryLoading ? (
-                                    <>Adding...</>
-                                ) : (
-                                    <>
-                                        <Plus className="mr-2 h-4 w-4" /> Add
-                                        Category
-                                    </>
-                                )}
-                            </Button>
-                        </form>
-                    </CardContent>
-                </Card>
-
-                {/* Category lists */}
-                <div className="space-y-6">
-                    {/* Delete Category Error Message */}
-                    {isDeleteCategoryError && deleteCategoryError && (
-                        <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
-                            <AlertCircle className="h-4 w-4" />
-                            <p className="text-sm font-medium">
-                                {deleteCategoryError}
+        <>
+            {/* Delete Confirmation Dialog */}
+            <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                        <DialogDescription className="space-y-3">
+                            <p className="text-pretty">
+                                This action cannot be undone. This will
+                                permanently delete your category and remove all
+                                it it's associated transactions.
                             </p>
-                        </div>
-                    )}
+                            <div className="rounded-md bg-muted p-3 text-sm text-muted-foreground text-pretty">
+                                <strong className="font-medium text-foreground">
+                                    💡 Recommendation:
+                                </strong>{" "}
+                                Instead of deleting, consider renaming the
+                                category to something like "Archived - Old
+                                Category Name" to preserve historical data and
+                                transaction records.
+                            </div>
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="mt-4 flex w-full justify-end">
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpenDeleteDialog(false)}
+                        >
+                            <X className="mr-1 h-4 w-4" />
+                            No, Cancel
+                        </Button>
+                        <Button
+                            className="ml-auto"
+                            variant="destructive"
+                            onClick={handleDeleteCategory}
+                            disabled={isDeleteCategoryLoading}
+                        >
+                            <Trash2 className="mr-1 h-4 w-4" /> Yes, Delete
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
-                    {/* Expense Categories */}
+            {/* Main jsx */}
+            <div className="w-full h-full flex flex-col gap-6 p-6">
+                {/* Header */}
+                <ScreenHeader
+                    title="Categories"
+                    description="Organize your transactions with custom income and expense
+                    categories"
+                />
+
+                {/* Error Message for fetching categories */}
+                {isCategoriesError && categoriesError && (
+                    <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                        <AlertCircle className="h-4 w-4" />
+                        <p className="text-sm font-medium">{categoriesError}</p>
+                    </div>
+                )}
+
+                {/* Main Content Grid */}
+                <div className="grid gap-6 md:grid-cols-2">
+                    {/* Add category form */}
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-lg">
-                                Expense Categories
+                                Add New Category
                             </CardTitle>
                             <CardDescription>
-                                {isCategoriesLoading && !isCategoriesRefetching
-                                    ? "Loading..."
-                                    : `${expenseCategories.length} ${expenseCategories.length === 1 ? "category" : "categories"}`}
+                                Create a custom category for your transactions
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            {isCategoriesLoading && !isCategoriesRefetching ? (
-                                <div className="space-y-2">
-                                    <Skeleton className="h-10 w-full" />
-                                    <Skeleton className="h-10 w-full" />
-                                    <Skeleton className="h-10 w-full" />
-                                </div>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {expenseCategories.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">
-                                            No expense categories yet. Create
-                                            one to get started.
+                            <form
+                                onSubmit={handleAddCategory}
+                                className="space-y-4"
+                            >
+                                {/* Form Error Message */}
+                                {formError && (
+                                    <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                                        <AlertCircle className="h-4 w-4" />
+                                        <p className="text-xs font-medium">
+                                            {formError}
                                         </p>
-                                    ) : (
-                                        expenseCategories.map((c) => (
-                                            <li
-                                                key={c.id}
-                                                className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md border border-transparent hover:border-border transition-colors"
-                                            >
-                                                <span className="text-sm font-medium">
-                                                    {c.name}
-                                                </span>
-                                                <div className="flex space-x-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
-                                                    >
-                                                        <SquarePenIcon className="h-4 w-4" />
-                                                    </Button>
+                                    </div>
+                                )}
 
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleDeleteCategory(
-                                                                c.id,
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            isDeleteCategoryLoading
-                                                        }
-                                                        className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </li>
-                                        ))
+                                {/* Create Category Error Message */}
+                                {isCreateCategoryError &&
+                                    createCategoryError && (
+                                        <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                                            <AlertCircle className="h-4 w-4" />
+                                            <p className="text-xs font-medium">
+                                                {createCategoryError}
+                                            </p>
+                                        </div>
                                     )}
-                                </ul>
-                            )}
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="name">Name</Label>
+                                    <Input
+                                        id="name"
+                                        value={name}
+                                        onChange={(e) =>
+                                            setName(e.target.value)
+                                        }
+                                        placeholder="e.g. Groceries, Salary"
+                                        disabled={isCreateCategoryLoading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="type">Type</Label>
+                                    <Select
+                                        value={type}
+                                        onValueChange={(
+                                            val: "INCOME" | "EXPENSE",
+                                        ) => setType(val)}
+                                        disabled={isCreateCategoryLoading}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="EXPENSE">
+                                                Expense
+                                            </SelectItem>
+                                            <SelectItem value="INCOME">
+                                                Income
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    disabled={
+                                        isCreateCategoryLoading ||
+                                        name.trim() === ""
+                                    }
+                                    className="w-full"
+                                >
+                                    {isCreateCategoryLoading ? (
+                                        <>Adding...</>
+                                    ) : (
+                                        <>
+                                            <Plus className="mr-2 h-4 w-4" />{" "}
+                                            Add Category
+                                        </>
+                                    )}
+                                </Button>
+                            </form>
                         </CardContent>
                     </Card>
 
-                    {/* Income Categories */}
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">
-                                Income Categories
-                            </CardTitle>
-                            <CardDescription>
-                                {isCategoriesLoading && !isCategoriesRefetching
-                                    ? "Loading..."
-                                    : `${incomeCategories.length} ${incomeCategories.length === 1 ? "category" : "categories"}`}
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {isCategoriesLoading && !isCategoriesRefetching ? (
-                                <div className="space-y-2">
-                                    <Skeleton className="h-10 w-full" />
-                                    <Skeleton className="h-10 w-full" />
-                                    <Skeleton className="h-10 w-full" />
-                                </div>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {incomeCategories.length === 0 ? (
-                                        <p className="text-sm text-muted-foreground">
-                                            No income categories yet. Create one
-                                            to get started.
-                                        </p>
-                                    ) : (
-                                        incomeCategories.map((c) => (
-                                            <li
-                                                key={c.id}
-                                                className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md border border-transparent hover:border-border transition-colors"
-                                            >
-                                                <span className="text-sm font-medium">
-                                                    {c.name}
-                                                </span>
+                    {/* Category lists */}
+                    <div className="space-y-6">
+                        {/* Delete Category Error Message */}
+                        {isDeleteCategoryError && deleteCategoryError && (
+                            <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                                <AlertCircle className="h-4 w-4" />
+                                <p className="text-sm font-medium">
+                                    {deleteCategoryError}
+                                </p>
+                            </div>
+                        )}
 
-                                                <div className="flex space-x-2">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
-                                                    >
-                                                        <SquarePenIcon className="h-4 w-4" />
-                                                    </Button>
+                        {/* Expense Categories */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">
+                                    Expense Categories
+                                </CardTitle>
+                                <CardDescription>
+                                    {isCategoriesLoading &&
+                                    !isCategoriesRefetching
+                                        ? "Loading..."
+                                        : `${expenseCategories.length} ${expenseCategories.length === 1 ? "category" : "categories"}`}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {isCategoriesLoading &&
+                                !isCategoriesRefetching ? (
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                    </div>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {expenseCategories.length === 0 ? (
+                                            <p className="text-sm text-muted-foreground">
+                                                No expense categories yet.
+                                                Create one to get started.
+                                            </p>
+                                        ) : (
+                                            expenseCategories.map((c) => (
+                                                <li
+                                                    key={c.id}
+                                                    className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md border border-transparent hover:border-border transition-colors"
+                                                >
+                                                    <span className="text-sm font-medium">
+                                                        {c.name}
+                                                    </span>
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
+                                                        >
+                                                            <SquarePenIcon className="h-4 w-4" />
+                                                        </Button>
 
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() =>
-                                                            handleDeleteCategory(
-                                                                c.id,
-                                                            )
-                                                        }
-                                                        disabled={
-                                                            isDeleteCategoryLoading
-                                                        }
-                                                        className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </li>
-                                        ))
-                                    )}
-                                </ul>
-                            )}
-                        </CardContent>
-                    </Card>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => {
+                                                                setCategoryIdToDelete(
+                                                                    c.id,
+                                                                );
+                                                                setOpenDeleteDialog(
+                                                                    true,
+                                                                );
+                                                            }}
+                                                            disabled={
+                                                                isDeleteCategoryLoading
+                                                            }
+                                                            className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </li>
+                                            ))
+                                        )}
+                                    </ul>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {/* Income Categories */}
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">
+                                    Income Categories
+                                </CardTitle>
+                                <CardDescription>
+                                    {isCategoriesLoading &&
+                                    !isCategoriesRefetching
+                                        ? "Loading..."
+                                        : `${incomeCategories.length} ${incomeCategories.length === 1 ? "category" : "categories"}`}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                {isCategoriesLoading &&
+                                !isCategoriesRefetching ? (
+                                    <div className="space-y-2">
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                        <Skeleton className="h-10 w-full" />
+                                    </div>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {incomeCategories.length === 0 ? (
+                                            <p className="text-sm text-muted-foreground">
+                                                No income categories yet. Create
+                                                one to get started.
+                                            </p>
+                                        ) : (
+                                            incomeCategories.map((c) => (
+                                                <li
+                                                    key={c.id}
+                                                    className="flex items-center justify-between p-3 hover:bg-muted/50 rounded-md border border-transparent hover:border-border transition-colors"
+                                                >
+                                                    <span className="text-sm font-medium">
+                                                        {c.name}
+                                                    </span>
+
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
+                                                        >
+                                                            <SquarePenIcon className="h-4 w-4" />
+                                                        </Button>
+
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => {
+                                                                setCategoryIdToDelete(
+                                                                    c.id,
+                                                                );
+                                                                setOpenDeleteDialog(
+                                                                    true,
+                                                                );
+                                                            }}
+                                                            disabled={
+                                                                isDeleteCategoryLoading
+                                                            }
+                                                            className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </li>
+                                            ))
+                                        )}
+                                    </ul>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

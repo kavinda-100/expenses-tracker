@@ -23,7 +23,7 @@
 - [x] Implement Screen Heder component in the frontend (React).
 - [x] Implement the category management screen in the frontend (React).
     - [ ] add a rename (update) category name feature.
-    - [ ] prompt a confirmation dialog before deleting a category that has transactions associated with it.
+    - [x] prompt a confirmation dialog before deleting a category that has transactions associated with it.
 - [ ] Implement the transaction management screen in the frontend (React).
 - [x] Implement the budget management screen in the frontend (React).
     - [ ] spent amount progress bar for each budget item.
