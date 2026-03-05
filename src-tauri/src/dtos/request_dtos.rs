@@ -8,6 +8,12 @@ pub struct CategoryRequestDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateCategoryRequestDto {
+    pub id: i64,
+    pub name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransactionRequestDto {
     pub amount: f64,
     pub description: Option<String>,

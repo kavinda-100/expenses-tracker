@@ -351,6 +351,9 @@ const CategoriesScreen = () => {
                                                         <RenameCategoryDialog
                                                             id={c.id}
                                                             oldName={c.name}
+                                                            refetchCategories={
+                                                                refetchCategories
+                                                            }
                                                         />
 
                                                         <Button
@@ -422,6 +425,9 @@ const CategoriesScreen = () => {
                                                         <RenameCategoryDialog
                                                             id={c.id}
                                                             oldName={c.name}
+                                                            refetchCategories={
+                                                                refetchCategories
+                                                            }
                                                         />
 
                                                         <Button
@@ -462,32 +468,55 @@ export default CategoriesScreen;
 const RenameCategoryDialog = ({
     id,
     oldName,
+    refetchCategories,
 }: {
     id: number;
     oldName: string;
+    refetchCategories: () => Promise<void>;
 }) => {
     const [open, setOpen] = React.useState(false);
     const [newName, setNewName] = React.useState(oldName);
 
     // Tauri mutation for renaming category
     const {
+        data: renameData,
         mutationAsync: renameCategoryAsync,
         error: renameCategoryError,
         isError: isRenameCategoryError,
         loading: isRenameCategoryLoading,
+        reset: resetRenameCategory,
     } = useTauriMutation<string, string>();
+
+    // When rename succeeds, refetch and close dialog
+    React.useEffect(() => {
+        if (renameData && !isRenameCategoryLoading && !isRenameCategoryError) {
+            refetchCategories().then(() => {
+                setOpen(false);
+                resetRenameCategory();
+            });
+        }
+    }, [
+        renameData,
+        isRenameCategoryLoading,
+        isRenameCategoryError,
+        refetchCategories,
+        resetRenameCategory,
+    ]);
 
     // handler for renaming category
     const handleRenameCategory = async () => {
+        // Validate that name has changed and is not empty
+        if (newName.trim() === "" || newName.trim() === oldName.trim()) {
+            return;
+        }
+
         // Implementation for renaming category
-        await renameCategoryAsync("rename_category", {
-            new_data: {
-                category_id: id,
-                new_name: newName,
+        await renameCategoryAsync("update_category", {
+            newData: {
+                id: id,
+                name: newName,
             },
         });
-        // Close the dialog after renaming
-        setOpen(false);
     };
     return (
         <>
@@ -501,17 +530,29 @@ const RenameCategoryDialog = ({
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Rename Category</DialogTitle>
+                        <DialogDescription>
+                            Enter a new name for this category.
+                        </DialogDescription>
                     </DialogHeader>
+
+                    {/* Error Message */}
+                    {isRenameCategoryError && renameCategoryError && (
+                        <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20">
+                            <AlertCircle className="h-4 w-4" />
+                            <p className="text-sm font-medium">
+                                {renameCategoryError}
+                            </p>
+                        </div>
+                    )}
+
                     <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="newName" className="text-right">
-                                New Name
-                            </Label>
+                        <div className="space-y-2">
+                            <Label htmlFor="newName">Category Name</Label>
                             <Input
                                 id="newName"
                                 value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
-                                className="col-span-3"
+                                placeholder="Enter new category name"
                                 disabled={isRenameCategoryLoading}
                             />
                         </div>
@@ -528,9 +569,20 @@ const RenameCategoryDialog = ({
                         <Button
                             type="submit"
                             onClick={handleRenameCategory}
-                            disabled={isRenameCategoryLoading}
+                            disabled={
+                                isRenameCategoryLoading ||
+                                newName.trim() === "" ||
+                                newName.trim() === oldName.trim()
+                            }
                         >
-                            Save Changes
+                            {isRenameCategoryLoading ? (
+                                "Saving..."
+                            ) : (
+                                <>
+                                    <SquarePenIcon className="mr-1 h-4 w-4" />
+                                    Save Changes
+                                </>
+                            )}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

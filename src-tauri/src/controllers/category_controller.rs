@@ -1,3 +1,4 @@
+use crate::dtos::request_dtos::UpdateCategoryRequestDto;
 use crate::dtos::response_dtos::CategoryResponseDto;
 use crate::dtos::{request_dtos::CategoryRequestDto, response_dtos::GetCategoryNamesResponseDto};
 use crate::helpers::helper::get_db_file_path;
@@ -147,4 +148,46 @@ pub fn get_categories_names() -> Result<Vec<GetCategoryNamesResponseDto>, String
 
     // Return the vector of category names
     Ok(category_names)
+}
+
+
+/**
+ * Update a category in the database
+ * @param new_data - The updated category data, including the category ID and the new name
+ * @return Result<String, String> - Ok(String) if the category was updated successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn update_category(new_data: UpdateCategoryRequestDto) -> Result<String, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
+    // Destructure the new_data to get the category ID and the new name
+    let UpdateCategoryRequestDto { id: category_id, name: new_name } = new_data;
+
+    // Validate input
+    if new_name.trim().is_empty() {
+        return Err("Category name cannot be empty".to_string());
+    }
+
+    // Open database connection and update category name
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Execute the update statement and check how many rows were affected
+    let rows_affected = conn
+        .execute(
+            "UPDATE categories SET name = ?1 WHERE id = ?2",
+            params![new_name, category_id],
+        )
+        .map_err(|e| format!("Failed to rename category: {}", e))?;
+
+    // If no rows were affected, it means the category with the given ID was not found
+    if rows_affected == 0 {
+        Err(format!("No category found with id: {}", category_id))
+    } else {
+        Ok(format!(
+            "Category with id {} renamed successfully",
+            category_id
+        ))
+    }
 }
