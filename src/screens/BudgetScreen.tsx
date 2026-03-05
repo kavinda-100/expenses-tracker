@@ -286,7 +286,7 @@ const BudgetScreen = () => {
                                                 </span>
                                             </div>
                                             <div className="text-muted-foreground text-xs">
-                                                of
+                                                -
                                             </div>
                                             <div className="flex flex-col gap-0.5 items-end">
                                                 <span className="text-muted-foreground text-xs">
