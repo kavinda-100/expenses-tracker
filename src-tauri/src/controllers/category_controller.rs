@@ -1,5 +1,5 @@
-use crate::dtos::{request_dtos::CategoryRequestDto, response_dtos::GetCategoryNamesResponseDto};
 use crate::dtos::response_dtos::CategoryResponseDto;
+use crate::dtos::{request_dtos::CategoryRequestDto, response_dtos::GetCategoryNamesResponseDto};
 use crate::helpers::helper::get_db_file_path;
 use rusqlite::{params, Connection};
 

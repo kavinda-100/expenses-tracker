@@ -11,7 +11,7 @@ pub struct CategoryRequestDto {
 pub struct TransactionRequestDto {
     pub amount: f64,
     pub description: Option<String>,
-    pub date: String,  // ISO 8601 format
+    pub date: String, // ISO 8601 format
     #[serde(rename = "type")]
     pub type_: String, // "INCOME" or "EXPENSE"
     pub category_id: i64,

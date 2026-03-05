@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, AlertCircle } from "lucide-react";
+import { Trash2, Plus, AlertCircle, SquarePenIcon } from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -27,6 +27,7 @@ import { Type } from "@/zod";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
 import ScreenHeader from "@/components/ScreenHeader";
+import { confirm } from "@tauri-apps/plugin-dialog";
 
 const CategoriesScreen = () => {
     const [name, setName] = React.useState("");
@@ -118,8 +119,30 @@ const CategoriesScreen = () => {
         setType("EXPENSE");
     };
 
+    // confirmation dialog before deleting a category since this action cannot be undone
+    // and will also delete all transactions associated with the category,
+    // so we want to make sure the user knows what they are doing before proceeding with the deletion.
+    const askDeleteConfirmation = async () => {
+        const message = `
+                        Are you sure you want to delete this category? This action cannot be undone.
+                        All transactions associated with this category will also be deleted.
+                        Please confirm that you want to proceed with deleting this category.
+                        (We recommend rename the category name to something like "Deleted - Old Category Name" instead of deleting it if 
+                        you have transactions associated with it and want to keep them for historical records)
+                        `;
+        const confirmation = await confirm(message, {
+            title: "Delete Category",
+            kind: "warning",
+        });
+        return confirmation;
+    };
+
     // handler for deleting a category
     const handleDeleteCategory = async (id: number) => {
+        // ask for confirmation before deleting a category since this action cannot be undone
+        const confirmed = await askDeleteConfirmation();
+        if (!confirmed) return;
+
         await deleteCategoryAsync("delete_category", { categoryId: id });
         // refetch categories after deleting one
         await refetchCategories();
@@ -279,21 +302,31 @@ const CategoriesScreen = () => {
                                                 <span className="text-sm font-medium">
                                                     {c.name}
                                                 </span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        handleDeleteCategory(
-                                                            c.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isDeleteCategoryLoading
-                                                    }
-                                                    className="text-destructive h-8 w-8 hover:bg-destructive/10"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+                                                <div className="flex space-x-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
+                                                    >
+                                                        <SquarePenIcon className="h-4 w-4" />
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDeleteCategory(
+                                                                c.id,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isDeleteCategoryLoading
+                                                        }
+                                                        className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </li>
                                         ))
                                     )}
@@ -337,21 +370,32 @@ const CategoriesScreen = () => {
                                                 <span className="text-sm font-medium">
                                                     {c.name}
                                                 </span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() =>
-                                                        handleDeleteCategory(
-                                                            c.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isDeleteCategoryLoading
-                                                    }
-                                                    className="text-destructive h-8 w-8 hover:bg-destructive/10"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
+
+                                                <div className="flex space-x-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
+                                                    >
+                                                        <SquarePenIcon className="h-4 w-4" />
+                                                    </Button>
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() =>
+                                                            handleDeleteCategory(
+                                                                c.id,
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            isDeleteCategoryLoading
+                                                        }
+                                                        className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </li>
                                         ))
                                     )}

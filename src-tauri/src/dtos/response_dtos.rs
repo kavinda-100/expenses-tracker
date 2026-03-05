@@ -5,7 +5,7 @@ pub struct CategoryResponseDto {
     pub id: i64,
     pub name: String,
     #[serde(rename = "type")]
-    pub type_: String,      // "INCOME" or "EXPENSE"
+    pub type_: String, // "INCOME" or "EXPENSE"
     pub created_at: String, // ISO 8601 format
 }
 
@@ -31,7 +31,7 @@ pub struct TransactionWithCategoryResponseDto {
     pub id: i64,
     pub amount: f64,
     pub description: Option<String>,
-    pub date: String,  // ISO 8601 format
+    pub date: String, // ISO 8601 format
     #[serde(rename = "type")]
     pub type_: String, // "INCOME" or "EXPENSE"
     pub category_id: i64,

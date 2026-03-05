@@ -3,7 +3,9 @@ use tauri::Manager;
 use crate::{
     controllers::{
         budget_controller::{add_budget, delete_budget, get_budgets, update_budget},
-        category_controller::{add_category, delete_category, get_all_categories, get_categories_names},
+        category_controller::{
+            add_category, delete_category, get_all_categories, get_categories_names,
+        },
         dashboard_controller::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
         },
@@ -53,6 +55,7 @@ pub fn run() {
     };
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,
