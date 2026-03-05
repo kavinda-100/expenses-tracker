@@ -226,8 +226,26 @@ const BudgetScreen = () => {
                         </Card>
                     ) : (
                         budget.map((b) => {
-                            // TODO: Add transaction data to calculate actual spending
-                            // For now, showing budget limits only
+                            const percentage =
+                                (b.spent_amount / b.amount) * 100;
+                            const percentageRounded = Math.round(percentage);
+
+                            // Determine color based on percentage
+                            const getProgressColor = (pct: number) => {
+                                if (pct >= 100) return "bg-red-500";
+                                if (pct >= 75) return "bg-orange-400";
+                                if (pct >= 50) return "bg-yellow-400";
+                                if (pct >= 25) return "bg-green-500";
+                                return "bg-emerald-400";
+                            };
+
+                            const getStatusColor = (pct: number) => {
+                                if (pct >= 100) return "text-red-500";
+                                if (pct >= 75) return "text-orange-500";
+                                if (pct >= 50) return "text-yellow-600";
+                                return "text-green-600";
+                            };
+
                             return (
                                 <Card key={b.id}>
                                     <CardHeader className="pb-3">
@@ -235,19 +253,74 @@ const BudgetScreen = () => {
                                             <CardTitle className="text-lg">
                                                 {b.category_name}
                                             </CardTitle>
-                                            <span className="text-sm font-medium">
-                                                {formatCurrency(b.amount)} limit
+                                            <span
+                                                className={`text-sm font-bold ${getStatusColor(percentage)}`}
+                                            >
+                                                {percentageRounded}% used
                                             </span>
                                         </div>
                                     </CardHeader>
-                                    <CardContent className="space-y-2">
-                                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                                            <span>
-                                                Budget for {monthName} {year}
-                                            </span>
-                                            <span className="text-xs">
-                                                ID: {b.id}
-                                            </span>
+                                    <CardContent className="space-y-3">
+                                        {/* Progress Bar */}
+                                        <div className="space-y-1.5">
+                                            <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                                                <div
+                                                    className={`h-full transition-all duration-300 ${getProgressColor(percentage)}`}
+                                                    style={{
+                                                        width: `${Math.min(percentage, 100)}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Amount Details */}
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className="text-muted-foreground text-xs">
+                                                    Spent
+                                                </span>
+                                                <span className="font-semibold">
+                                                    {formatCurrency(
+                                                        b.spent_amount,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <div className="text-muted-foreground text-xs">
+                                                of
+                                            </div>
+                                            <div className="flex flex-col gap-0.5 items-end">
+                                                <span className="text-muted-foreground text-xs">
+                                                    Budget
+                                                </span>
+                                                <span className="font-semibold">
+                                                    {formatCurrency(b.amount)}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Remaining/Over Budget */}
+                                        <div className="pt-1 border-t">
+                                            {b.spent_amount <= b.amount ? (
+                                                <p className="text-xs text-muted-foreground">
+                                                    <span className="font-medium text-green-600">
+                                                        {formatCurrency(
+                                                            b.amount -
+                                                                b.spent_amount,
+                                                        )}
+                                                    </span>{" "}
+                                                    remaining
+                                                </p>
+                                            ) : (
+                                                <p className="text-xs text-muted-foreground">
+                                                    <span className="font-medium text-red-600">
+                                                        {formatCurrency(
+                                                            b.spent_amount -
+                                                                b.amount,
+                                                        )}
+                                                    </span>{" "}
+                                                    over budget
+                                                </p>
+                                            )}
                                         </div>
                                     </CardContent>
                                 </Card>
