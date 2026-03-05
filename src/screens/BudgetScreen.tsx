@@ -93,7 +93,12 @@ const BudgetScreen = () => {
                 .array()
                 .safeParse(categoryNamesData);
             if (parsedCategoryNames.success) {
-                setCategoryNames(parsedCategoryNames.data);
+                // filter out only EXPENSE type categories for budgeting
+                setCategoryNames(
+                    parsedCategoryNames.data.filter(
+                        (c) => c.type === "EXPENSE",
+                    ),
+                );
             } else {
                 console.error(
                     "Category names data validation failed:",

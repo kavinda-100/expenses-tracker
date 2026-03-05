@@ -127,7 +127,7 @@ pub fn get_categories_names() -> Result<Vec<GetCategoryNamesResponseDto>, String
 
     // Prepare the SQL statement to select category names
     let mut stmt = conn
-        .prepare("SELECT id, name FROM categories")
+        .prepare("SELECT id, name, type FROM categories")
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
     // Execute the query and map the results to a vector of strings
@@ -136,6 +136,7 @@ pub fn get_categories_names() -> Result<Vec<GetCategoryNamesResponseDto>, String
             Ok(GetCategoryNamesResponseDto {
                 id: row.get(0)?,
                 name: row.get(1)?,
+                type_: row.get(2)?,
             })
         })
         .map_err(|e| format!("Failed to query category names: {}", e))?;

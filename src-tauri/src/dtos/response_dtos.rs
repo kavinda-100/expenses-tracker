@@ -13,6 +13,8 @@ pub struct CategoryResponseDto {
 pub struct GetCategoryNamesResponseDto {
     pub id: i64,
     pub name: String,
+    #[serde(rename = "type")]
+    pub type_: String, // "INCOME" or "EXPENSE"
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
