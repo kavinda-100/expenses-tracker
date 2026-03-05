@@ -15,6 +15,7 @@ import {
     Wallet,
     RefreshCcwIcon,
     LoaderIcon,
+    TrashIcon,
 } from "lucide-react";
 import {
     Select,
@@ -23,6 +24,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import {
     Card,
     CardContent,
@@ -35,6 +44,7 @@ import { formatCurrency } from "@/lib/utils";
 import ScreenHeader from "@/components/ScreenHeader";
 
 const BudgetScreen = () => {
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
     const [categoryNames, setCategoryNames] = React.useState<
         GetCategoryNamesType[]
     >([]);
@@ -72,6 +82,15 @@ const BudgetScreen = () => {
         isError: isCreateBudgetError,
         loading: isCreateBudgetLoading,
         mutationAsync: createBudgetAsync,
+    } = useTauriMutation<string, string>();
+
+    // tauri mutation for deleting a budget
+    const {
+        data: deleteBudgetData,
+        error: deleteBudgetError,
+        isError: isDeleteBudgetError,
+        loading: isDeleteBudgetLoading,
+        mutationAsync: deleteBudgetAsync,
     } = useTauriMutation<string, string>();
 
     // Fetch category names on component mount only
@@ -159,6 +178,25 @@ const BudgetScreen = () => {
         // Reset form
         setSelectedCategoryId(0);
         setAmount(0);
+    };
+
+    // delete budget function (opens confirmation dialog)
+    const handleDeleteBudget = async (budgetId: number) => {
+        // For now, just open the confirmation dialog
+        await deleteBudgetAsync("delete_budget", {
+            budgetId: budgetId,
+        });
+
+        if (
+            !isDeleteBudgetLoading &&
+            !isDeleteBudgetError &&
+            deleteBudgetData
+        ) {
+            // After deleting a budget, refetch the budgets to update the list
+            await refetchBudgetsAsync();
+            // close the confirmation dialog
+            setIsDeleteDialogOpen(false);
+        }
     };
 
     // Get current month and year for display
@@ -299,7 +337,7 @@ const BudgetScreen = () => {
                                         </div>
 
                                         {/* Remaining/Over Budget */}
-                                        <div className="pt-1 border-t">
+                                        <div className="pt-1 border-t flex justify-between items-center">
                                             {b.spent_amount <= b.amount ? (
                                                 <p className="text-xs text-muted-foreground">
                                                     <span className="font-medium text-green-600">
@@ -321,6 +359,78 @@ const BudgetScreen = () => {
                                                     over budget
                                                 </p>
                                             )}
+
+                                            {/* delete budget */}
+                                            <Dialog
+                                                open={isDeleteDialogOpen}
+                                                onOpenChange={
+                                                    setIsDeleteDialogOpen
+                                                }
+                                            >
+                                                <DialogTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="text-destructive cursor-pointer"
+                                                    >
+                                                        <TrashIcon className="h-4 w-4" />
+                                                    </Button>
+                                                </DialogTrigger>
+                                                <DialogContent>
+                                                    <DialogHeader>
+                                                        <DialogTitle>
+                                                            Delete Budget
+                                                        </DialogTitle>
+                                                        <DialogDescription>
+                                                            Are you sure you
+                                                            want to delete this
+                                                            budget? This action
+                                                            cannot be undone.
+                                                        </DialogDescription>
+                                                        {isDeleteBudgetError &&
+                                                            deleteBudgetError && (
+                                                                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20 mt-4">
+                                                                    <AlertCircle className="h-4 w-4" />
+                                                                    <p className="text-xs font-medium text-pretty">
+                                                                        {
+                                                                            deleteBudgetError
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                    </DialogHeader>
+                                                    <div className="flex justify-end gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            onClick={() =>
+                                                                setIsDeleteDialogOpen(
+                                                                    false,
+                                                                )
+                                                            }
+                                                            disabled={
+                                                                isDeleteBudgetLoading
+                                                            }
+                                                        >
+                                                            No, Cancel
+                                                        </Button>
+                                                        <Button
+                                                            variant="destructive"
+                                                            disabled={
+                                                                isDeleteBudgetLoading
+                                                            }
+                                                            onClick={() =>
+                                                                handleDeleteBudget(
+                                                                    b.id,
+                                                                )
+                                                            }
+                                                        >
+                                                            {isDeleteBudgetLoading
+                                                                ? "Deleting..."
+                                                                : "Yes, Delete"}
+                                                        </Button>
+                                                    </div>
+                                                </DialogContent>
+                                            </Dialog>
                                         </div>
                                     </CardContent>
                                 </Card>

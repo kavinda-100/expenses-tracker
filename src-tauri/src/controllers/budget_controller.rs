@@ -116,6 +116,7 @@ pub fn get_budgets(params: GetAllBudgetRequestDto) -> Result<Vec<BudgetResponseD
             FROM budgets b
             JOIN categories c ON b.category_id = c.id
             WHERE b.month = ?1 AND b.year = ?2
+            ORDER BY b.created_at DESC
         ",
         )
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
