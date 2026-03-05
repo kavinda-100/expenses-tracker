@@ -17,7 +17,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     CategoryType,
@@ -27,6 +26,7 @@ import {
 import { Type } from "@/zod";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
+import ScreenHeader from "@/components/ScreenHeader";
 
 const CategoriesScreen = () => {
     const [name, setName] = React.useState("");
@@ -128,17 +128,11 @@ const CategoriesScreen = () => {
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">
-                    Categories
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                    Organize your transactions with custom income and expense
-                    categories
-                </p>
-            </div>
-
-            <Separator />
+            <ScreenHeader
+                title="Categories"
+                description="Organize your transactions with custom income and expense
+                    categories"
+            />
 
             {/* Error Message for fetching categories */}
             {isCategoriesError && categoriesError && (

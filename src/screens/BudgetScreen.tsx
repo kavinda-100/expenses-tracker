@@ -33,6 +33,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
+import ScreenHeader from "@/components/ScreenHeader";
 
 const BudgetScreen = () => {
     const [categoryNames, setCategoryNames] = React.useState<
@@ -164,15 +165,10 @@ const BudgetScreen = () => {
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Budgets</h1>
-                <p className="text-sm text-muted-foreground">
-                    Set spending limits and track your progress for {monthName}{" "}
-                    {year}
-                </p>
-            </div>
-
-            <Separator />
+            <ScreenHeader
+                title="Budgets"
+                description={`Set spending limits and track your progress for ${monthName} - ${year}`}
+            />
 
             {/* Error Messages */}
             {isCategoryNamesError && categoryNamesError && (

@@ -17,6 +17,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import React from "react";
+import ScreenHeader from "@/components/ScreenHeader";
 
 const SettingScreen = () => {
     const [selectedCurrency, setSelectedCurrency] =
@@ -45,14 +46,10 @@ const SettingScreen = () => {
     return (
         <div className="w-full h-full flex flex-col gap-6 p-6">
             {/* Header */}
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-                <p className="text-sm text-muted-foreground">
-                    Manage your application preferences and data
-                </p>
-            </div>
-
-            <Separator />
+            <ScreenHeader
+                title="Settings"
+                description="Manage your application preferences and data"
+            />
 
             {/* Appearance Section */}
             <Card>
