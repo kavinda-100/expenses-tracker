@@ -21,8 +21,10 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -346,13 +348,10 @@ const CategoriesScreen = () => {
                                                         {c.name}
                                                     </span>
                                                     <div className="flex space-x-2">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
-                                                        >
-                                                            <SquarePenIcon className="h-4 w-4" />
-                                                        </Button>
+                                                        <RenameCategoryDialog
+                                                            id={c.id}
+                                                            oldName={c.name}
+                                                        />
 
                                                         <Button
                                                             variant="ghost"
@@ -420,13 +419,10 @@ const CategoriesScreen = () => {
                                                     </span>
 
                                                     <div className="flex space-x-2">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="text-primary h-8 w-8 hover:bg-primary/10 cursor-pointer"
-                                                        >
-                                                            <SquarePenIcon className="h-4 w-4" />
-                                                        </Button>
+                                                        <RenameCategoryDialog
+                                                            id={c.id}
+                                                            oldName={c.name}
+                                                        />
 
                                                         <Button
                                                             variant="ghost"
@@ -462,3 +458,83 @@ const CategoriesScreen = () => {
 };
 
 export default CategoriesScreen;
+
+const RenameCategoryDialog = ({
+    id,
+    oldName,
+}: {
+    id: number;
+    oldName: string;
+}) => {
+    const [open, setOpen] = React.useState(false);
+    const [newName, setNewName] = React.useState(oldName);
+
+    // Tauri mutation for renaming category
+    const {
+        mutationAsync: renameCategoryAsync,
+        error: renameCategoryError,
+        isError: isRenameCategoryError,
+        loading: isRenameCategoryLoading,
+    } = useTauriMutation<string, string>();
+
+    // handler for renaming category
+    const handleRenameCategory = async () => {
+        // Implementation for renaming category
+        await renameCategoryAsync("rename_category", {
+            new_data: {
+                category_id: id,
+                new_name: newName,
+            },
+        });
+        // Close the dialog after renaming
+        setOpen(false);
+    };
+    return (
+        <>
+            {/* Rename Category dialog */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <SquarePenIcon className="h-4 w-4" />
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Rename Category</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="newName" className="text-right">
+                                New Name
+                            </Label>
+                            <Input
+                                id="newName"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className="col-span-3"
+                                disabled={isRenameCategoryLoading}
+                            />
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setOpen(false)}
+                            disabled={isRenameCategoryLoading}
+                        >
+                            <X className="mr-1 h-4 w-4" />
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            onClick={handleRenameCategory}
+                            disabled={isRenameCategoryLoading}
+                        >
+                            Save Changes
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
+    );
+};
