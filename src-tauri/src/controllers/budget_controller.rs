@@ -91,11 +91,28 @@ pub fn get_budgets(params: GetAllBudgetRequestDto) -> Result<Vec<BudgetResponseD
     // Open database connection and retrieve budgets
     let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
-    // Prepare the SQL statement to select budgets and categories for the specified month and year
+    // Prepare the SQL statement to select budgets with spent amounts
+    // The subquery calculates the total spent amount for each category in the given month/year
     let mut stmt = conn
         .prepare(
             "
-            SELECT b.id, b.amount, b.month, b.year, b.category_id, c.name, b.created_at
+            SELECT 
+                b.id, 
+                b.amount, 
+                b.month, 
+                b.year, 
+                b.category_id, 
+                c.name,
+                COALESCE(
+                    (SELECT SUM(t.amount)
+                     FROM transactions t
+                     WHERE t.category_id = b.category_id
+                     AND t.type = 'EXPENSE'
+                     AND strftime('%m', t.date) = printf('%02d', b.month)
+                     AND strftime('%Y', t.date) = CAST(b.year AS TEXT)),
+                    0.0
+                ) as spent_amount,
+                b.created_at
             FROM budgets b
             JOIN categories c ON b.category_id = c.id
             WHERE b.month = ?1 AND b.year = ?2
@@ -113,7 +130,8 @@ pub fn get_budgets(params: GetAllBudgetRequestDto) -> Result<Vec<BudgetResponseD
                 year: row.get(3)?,
                 category_id: row.get(4)?,
                 category_name: row.get(5)?,
-                created_at: row.get(6)?,
+                spent_amount: row.get(6)?,
+                created_at: row.get(7)?,
             })
         })
         .map_err(|e| format!("Failed to query budgets: {}", e))?;

@@ -23,6 +23,7 @@ pub struct BudgetResponseDto {
     pub year: i32,
     pub category_id: i64,
     pub category_name: String,
+    pub spent_amount: f64,
     pub created_at: String, // ISO 8601 format
 }
 
