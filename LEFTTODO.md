@@ -22,7 +22,7 @@
     - [x] create settings controller and implement tests for it.
 - [x] Implement Screen Heder component in the frontend (React).
 - [x] Implement the category management screen in the frontend (React).
-    - [ ] add a rename (update) category name feature.
+    - [x] add a rename (update) category name feature.
     - [x] prompt a confirmation dialog before deleting a category that has transactions associated with it.
 - [ ] Implement the transaction management screen in the frontend (React).
 - [x] Implement the budget management screen in the frontend (React).
