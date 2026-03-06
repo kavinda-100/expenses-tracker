@@ -37,6 +37,7 @@ import { useTauriQuery } from "@/hooks/useTauriQuery";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
 import { TransactionZodSchema } from "@/zod/transactionSchemas";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
+import TransactionTable from "@/sections/TransactionTable";
 
 const TransactionsScreen = () => {
     const [open, setOpen] = React.useState(false);
@@ -362,6 +363,9 @@ const TransactionsScreen = () => {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            {/* Transaction table */}
+            <TransactionTable />
         </div>
     );
 };
