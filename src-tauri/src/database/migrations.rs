@@ -111,7 +111,7 @@ pub fn run_migrations(conn: &mut Connection) -> Result<(), String> {
             created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
             category_id INTEGER NOT NULL,
             FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
-            UNIQUE(category_id, month, year, created_at)
+            UNIQUE(category_id, month, year)
         );",
         [],
     )

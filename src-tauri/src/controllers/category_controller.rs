@@ -151,7 +151,6 @@ pub fn get_categories_names() -> Result<Vec<GetCategoryNamesResponseDto>, String
     Ok(category_names)
 }
 
-
 /**
  * Update a category in the database
  * @param new_data - The updated category data, including the category ID and the new name
@@ -164,7 +163,10 @@ pub fn update_category(new_data: UpdateCategoryRequestDto) -> Result<String, Str
     let db_file = get_db_file_path();
 
     // Destructure the new_data to get the category ID and the new name
-    let UpdateCategoryRequestDto { id: category_id, name: new_name } = new_data;
+    let UpdateCategoryRequestDto {
+        id: category_id,
+        name: new_name,
+    } = new_data;
 
     // Validate input
     if new_name.trim().is_empty() {
