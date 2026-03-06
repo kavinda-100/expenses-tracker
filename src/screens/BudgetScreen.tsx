@@ -39,6 +39,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import ScreenHeader from "@/components/ScreenHeader";
@@ -367,14 +372,21 @@ const BudgetScreen = () => {
                                                     setIsDeleteDialogOpen
                                                 }
                                             >
-                                                <DialogTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-destructive cursor-pointer"
-                                                    >
-                                                        <TrashIcon className="h-4 w-4" />
-                                                    </Button>
+                                                <DialogTrigger>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                className="text-destructive cursor-pointer"
+                                                            >
+                                                                <TrashIcon className="h-4 w-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Delete Budget</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
                                                 </DialogTrigger>
                                                 <DialogContent>
                                                     <DialogHeader>
@@ -490,19 +502,32 @@ const BudgetScreen = () => {
                                         <Label htmlFor="category">
                                             Category
                                         </Label>
-                                        <Button
-                                            variant="ghost"
-                                            size="xs"
-                                            className="mt-1 cursor-pointer"
-                                            onClick={refetchCategoryNamesAsync}
-                                            disabled={isCategoryNamesRefetching}
-                                        >
-                                            {isCategoryNamesRefetching ? (
-                                                <LoaderIcon className="animate-spin h-4 w-4" />
-                                            ) : (
-                                                <RefreshCcwIcon className="h-4 w-4" />
-                                            )}
-                                        </Button>
+
+                                        {/*  Refresh Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="xs"
+                                                    className="mt-1 cursor-pointer"
+                                                    onClick={
+                                                        refetchCategoryNamesAsync
+                                                    }
+                                                    disabled={
+                                                        isCategoryNamesRefetching
+                                                    }
+                                                >
+                                                    {isCategoryNamesRefetching ? (
+                                                        <LoaderIcon className="animate-spin h-4 w-4" />
+                                                    ) : (
+                                                        <RefreshCcwIcon className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Refresh Categories</p>
+                                            </TooltipContent>
+                                        </Tooltip>
                                     </div>
                                     <Select
                                         value={
