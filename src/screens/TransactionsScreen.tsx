@@ -95,6 +95,29 @@ const TransactionsScreen = () => {
         }
     }, [categoryNamesData]);
 
+    // Watch for successful transaction creation and close dialog
+    React.useEffect(() => {
+        if (
+            !isCreateTransactionLoading &&
+            !isCreateTransactionError &&
+            createTransactionData
+        ) {
+            // Reset form fields
+            setAmount(0);
+            setDescription("");
+            setDate(undefined);
+            setType("INCOME");
+            setCategoryId(null);
+            setValidationErrors(null);
+            // Close dialog
+            setOpen(false);
+        }
+    }, [
+        createTransactionData,
+        isCreateTransactionError,
+        isCreateTransactionLoading,
+    ]);
+
     // handle create transaction
     const handleCreateTransaction = async () => {
         // reset validation errors
@@ -136,19 +159,6 @@ const TransactionsScreen = () => {
                 category_id: validatedData.data.category_id,
             },
         });
-        // if transaction creation is successful, close the dialog and reset form fields
-        if (
-            !isCreateTransactionLoading &&
-            !isCreateTransactionError &&
-            createTransactionData
-        ) {
-            setAmount(0);
-            setDescription("");
-            setDate(undefined);
-            setType("INCOME");
-            setCategoryId(null);
-            setOpen(false);
-        }
     };
 
     return (
