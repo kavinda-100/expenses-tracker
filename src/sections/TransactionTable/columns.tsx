@@ -148,7 +148,7 @@ export const columns: ColumnDef<TransactionWithCategoryType>[] = [
         },
     },
     {
-        accessorKey: "created_at",
+        accessorKey: "date",
         header: () => (
             <div className="text-right font-semibold flex items-center justify-end gap-2">
                 <Calendar className="h-4 w-4" />
@@ -156,7 +156,7 @@ export const columns: ColumnDef<TransactionWithCategoryType>[] = [
             </div>
         ),
         cell: ({ row }) => {
-            const date = new Date(row.original.created_at);
+            const date = new Date(row.original.date);
             const formattedDate = Intl.DateTimeFormat("en-US", {
                 year: "numeric",
                 month: "short",

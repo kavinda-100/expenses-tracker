@@ -38,6 +38,7 @@ import ErrorMessageBox from "@/components/ErrorMessageBox";
 import { TransactionZodSchema } from "@/zod/transactionSchemas";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
 import TransactionTable from "@/sections/TransactionTable";
+import { useGetTransactions } from "@/hooks/Transactions/useGetTransactions";
 
 const TransactionsScreen = () => {
     const [open, setOpen] = React.useState(false);
@@ -52,6 +53,15 @@ const TransactionsScreen = () => {
     const [validationErrors, setValidationErrors] = React.useState<
         string | null
     >(null);
+
+    // hook for fetching transactions from the database
+    const {
+        transactions,
+        transactionsIsError,
+        transactionsError,
+        isTransactionsLoading,
+        refetchTransactions,
+    } = useGetTransactions();
 
     // Tauri query for fetching category names
     const {
@@ -160,6 +170,9 @@ const TransactionsScreen = () => {
                 category_id: validatedData.data.category_id,
             },
         });
+
+        // refetch transactions to update the table
+        await refetchTransactions();
     };
 
     return (
@@ -365,7 +378,12 @@ const TransactionsScreen = () => {
             </div>
 
             {/* Transaction table */}
-            <TransactionTable />
+            <TransactionTable
+                transactions={transactions}
+                isLoading={isTransactionsLoading}
+                isError={transactionsIsError}
+                error={transactionsError}
+            />
         </div>
     );
 };

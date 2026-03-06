@@ -6,7 +6,6 @@ import {
     TransactionWithCategoryType,
     TransactionWithCategoryZodSchema,
 } from "@/zod/transactionSchemas";
-import { useGetTransactions } from "@/hooks/Transactions/useGetTransactions";
 
 // async function getData(): Promise<TransactionWithCategoryType[]> {
 //     const status = ["INCOME", "EXPENSE"] as const;
@@ -23,22 +22,26 @@ import { useGetTransactions } from "@/hooks/Transactions/useGetTransactions";
 //     }));
 // }
 
-export default function TransactionTable() {
+interface TransactionTableProps {
+    transactions: TransactionWithCategoryType[] | null;
+    isLoading: boolean;
+    isError: boolean;
+    error: string | null;
+}
+
+export default function TransactionTable({
+    transactions,
+    isLoading,
+    isError,
+    error,
+}: TransactionTableProps) {
     const [data, setData] = React.useState<TransactionWithCategoryType[]>([]);
     const [transactionValidationError, setTransactionValidationError] =
         React.useState<string | null>(null);
 
-    // hook for fetching transactions from the database
-    const {
-        transactions,
-        transactionsIsError,
-        transactionsError,
-        isTransactionsLoading,
-    } = useGetTransactions();
-
     // useEffect to update the data state when transactions are fetched
     React.useEffect(() => {
-        if (transactions && !isTransactionsLoading && !transactionsIsError) {
+        if (transactions && !isLoading && !isError) {
             const validatedTransactions =
                 TransactionWithCategoryZodSchema.array().safeParse(
                     transactions,
@@ -55,9 +58,9 @@ export default function TransactionTable() {
                 );
             }
         }
-    }, [isTransactionsLoading, transactions, transactionsIsError]);
+    }, [isLoading, transactions, isError]);
 
-    if (isTransactionsLoading) {
+    if (isLoading) {
         return (
             <div className="w-full rounded-lg border bg-card shadow-sm p-8">
                 <div className="flex flex-col items-center justify-center gap-4">
@@ -70,16 +73,13 @@ export default function TransactionTable() {
         );
     }
 
-    if (transactionsIsError || transactionValidationError) {
-        const errorMessage =
-            transactionsError ?? "Failed to fetch transactions";
+    if (isError || transactionValidationError) {
+        const errorMessage = error ?? "Failed to fetch transactions";
         return (
             <div className="w-full rounded-lg border bg-card shadow-sm p-8">
                 <div className="flex flex-col items-center justify-center gap-4">
                     <p className="text-sm text-muted-foreground">
-                        {transactionsIsError
-                            ? errorMessage
-                            : transactionValidationError}
+                        {isError ? errorMessage : transactionValidationError}
                     </p>
                 </div>
             </div>
