@@ -37,6 +37,8 @@ import { useTauriQuery } from "@/hooks/useTauriQuery";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
 import { TransactionZodSchema } from "@/zod/transactionSchemas";
 import { useTauriMutation } from "@/hooks/useTauriMutation";
+import TransactionTable from "@/sections/TransactionTable";
+import { useGetTransactions } from "@/hooks/Transactions/useGetTransactions";
 
 const TransactionsScreen = () => {
     const [open, setOpen] = React.useState(false);
@@ -51,6 +53,15 @@ const TransactionsScreen = () => {
     const [validationErrors, setValidationErrors] = React.useState<
         string | null
     >(null);
+
+    // hook for fetching transactions from the database
+    const {
+        transactions,
+        transactionsIsError,
+        transactionsError,
+        isTransactionsLoading,
+        refetchTransactions,
+    } = useGetTransactions();
 
     // Tauri query for fetching category names
     const {
@@ -68,6 +79,15 @@ const TransactionsScreen = () => {
         error: createTransactionError,
         isError: isCreateTransactionError,
         mutationAsync: createTransactionAsync,
+    } = useTauriMutation<string, string>();
+
+    // Tauri mutation for deleting transaction.
+    const {
+        data: _deleteTransactionData,
+        loading: isDeleteTransactionLoading,
+        error: _deleteTransactionError,
+        isError: _isDeleteTransactionError,
+        mutationAsync: deleteTransactionAsync,
     } = useTauriMutation<string, string>();
 
     // Fetch category names on component mount only
@@ -126,7 +146,7 @@ const TransactionsScreen = () => {
         const transactionData = {
             amount,
             description,
-            date: date ? date.toISOString() : "", // convert to ISO string (backend expects ISO 8601 format)
+            date: date ? date.toISOString() : new Date().toISOString(), // convert to ISO string (backend expects ISO 8601 format)
             type,
             category_id: categoryId,
         };
@@ -159,6 +179,20 @@ const TransactionsScreen = () => {
                 category_id: validatedData.data.category_id,
             },
         });
+
+        // refetch transactions to update the table
+        await refetchTransactions();
+    };
+
+    // delete transaction handler
+    const handleDeleteTransaction = async (transactionId: number) => {
+        // invoke Tauri command to delete transaction
+        await deleteTransactionAsync("delete_transaction", {
+            transactionId: transactionId,
+        });
+
+        // refetch transactions to update the table
+        await refetchTransactions();
     };
 
     return (
@@ -362,6 +396,16 @@ const TransactionsScreen = () => {
                     </DialogContent>
                 </Dialog>
             </div>
+
+            {/* Transaction table */}
+            <TransactionTable
+                transactions={transactions}
+                isLoading={isTransactionsLoading}
+                isError={transactionsIsError}
+                error={transactionsError}
+                onDeleteTransaction={handleDeleteTransaction}
+                isDeleting={isDeleteTransactionLoading}
+            />
         </div>
     );
 };

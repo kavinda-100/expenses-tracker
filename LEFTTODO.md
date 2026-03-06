@@ -30,8 +30,10 @@
     - [x] add a update budget feature.
 - [x] Implement the transaction management screen in the frontend (React).
     - [x] add transaction dialog form for creating a new transaction.
-    - [ ] add a transaction table to display the transactions with pagination (separate component).
-    - [ ] add a delete transaction feature with a confirmation dialog.
-    - [ ] add a update transaction feature.
+    - [x] add a transaction table to display the transactions with pagination (separate component).
+    - [x] add a delete transaction feature with a confirmation dialog.
 - [ ] Implement the dashboard screen in the frontend (React).
+    - [ ] add a overview section to display total income, total expenses, and net balance.
+    - [ ] add a recent transactions section to display the recent transactions with filters.
+    - [ ] add a last 7 days transactions section to display the transactions of last 7 days.
 - [ ] Implement the report screen in the frontend (React).

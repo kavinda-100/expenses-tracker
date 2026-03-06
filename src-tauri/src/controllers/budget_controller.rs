@@ -40,6 +40,23 @@ pub fn add_budget(new_budget: AddBudgetRequestDto) -> Result<String, String> {
     // Open database connection and insert budget
     let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
 
+    // check if a budget already exists for the same category, month, and year
+    let mut stmt = conn
+        .prepare(
+            "SELECT COUNT(*) FROM budgets WHERE category_id = ?1 AND month = ?2 AND year = ?3",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    let count: i64 = stmt
+        .query_row(params![category_id, month, year], |row| row.get(0))
+        .map_err(|e| format!("Failed to query budget count: {}", e))?;
+
+    // If a budget already exists, return an error message
+    if count > 0 {
+        return Err(format!("A budget for this category on {}/{} already exists", month, year));
+    }
+
+    // Execute the insert statement and get the last inserted ID
     conn.execute(
         "INSERT INTO budgets (amount, month, year, category_id) VALUES (?1, ?2, ?3, ?4)",
         params![amount, month, year, category_id],

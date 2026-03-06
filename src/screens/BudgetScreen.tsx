@@ -175,6 +175,44 @@ const BudgetScreen = () => {
         }
     }, [budgetsData]);
 
+    // Use effect to reSet state after creating a new budget successfully
+    React.useEffect(() => {
+        if (
+            !isCreateBudgetLoading &&
+            !isCreateBudgetError &&
+            createBudgetData
+        ) {
+            // Reset form
+            setSelectedCategoryId(0);
+            setAmount(0);
+        }
+    }, [createBudgetData, isCreateBudgetError, isCreateBudgetLoading]);
+
+    // Use effect to reSet state after deleting a budget successfully (close confirmation dialog)
+    React.useEffect(() => {
+        if (
+            !isDeleteBudgetLoading &&
+            !isDeleteBudgetError &&
+            deleteBudgetData
+        ) {
+            // close the confirmation dialog
+            setDeletingBudgetId(null);
+        }
+    }, [deleteBudgetData, isDeleteBudgetError, isDeleteBudgetLoading]);
+
+    // Use effect to reSet state after updating a budget successfully
+    React.useEffect(() => {
+        if (
+            !isUpdateBudgetLoading &&
+            !isUpdateBudgetError &&
+            updateBudgetData
+        ) {
+            // Reset update amount and close dialog
+            setUpdateAmount(0);
+            setEditingBudgetId(null);
+        }
+    }, [updateBudgetData, isUpdateBudgetError, isUpdateBudgetLoading]);
+
     // Function to handle creating a new budget
     const handleCreateBudget = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -199,12 +237,8 @@ const BudgetScreen = () => {
             },
         });
 
-        // After creating a budget, refetch the budgets to update the list
+        // Refetch budgets after creating a new one
         await refetchBudgetsAsync();
-
-        // Reset form
-        setSelectedCategoryId(0);
-        setAmount(0);
     };
 
     // delete budget function (opens confirmation dialog)
@@ -214,16 +248,8 @@ const BudgetScreen = () => {
             budgetId: budgetId,
         });
 
-        if (
-            !isDeleteBudgetLoading &&
-            !isDeleteBudgetError &&
-            deleteBudgetData
-        ) {
-            // After deleting a budget, refetch the budgets to update the list
-            await refetchBudgetsAsync();
-            // close the confirmation dialog
-            setDeletingBudgetId(null);
-        }
+        // Refetch budgets after creating a new one
+        await refetchBudgetsAsync();
     };
 
     // update budget function
@@ -240,17 +266,8 @@ const BudgetScreen = () => {
             },
         });
 
-        if (
-            !isUpdateBudgetLoading &&
-            !isUpdateBudgetError &&
-            updateBudgetData
-        ) {
-            // After updating a budget, refetch the budgets to update the list
-            await refetchBudgetsAsync();
-            // Reset update amount and close dialog
-            setUpdateAmount(0);
-            setEditingBudgetId(null);
-        }
+        // Refetch budgets after creating a new one
+        await refetchBudgetsAsync();
     };
 
     // Get current month and year for display

@@ -4,7 +4,8 @@ use crate::{
     controllers::{
         budget_controller::{add_budget, delete_budget, get_budgets, update_budget},
         category_controller::{
-            add_category, delete_category, get_all_categories, get_categories_names, update_category,
+            add_category, delete_category, get_all_categories, get_categories_names,
+            update_category,
         },
         dashboard_controller::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
