@@ -9,8 +9,12 @@ import {
     Tag,
     Calendar,
 } from "lucide-react";
+import DeleteTransactionCell from "./DeleteTransactionCell";
 
-export const columns: ColumnDef<TransactionWithCategoryType>[] = [
+export const columns = (
+    onDeleteTransaction: (transactionId: number) => Promise<void>,
+    isDeleting: boolean,
+): ColumnDef<TransactionWithCategoryType>[] => [
     {
         accessorKey: "id",
         header: ({ column }) => {
@@ -162,18 +166,24 @@ export const columns: ColumnDef<TransactionWithCategoryType>[] = [
                 month: "short",
                 day: "numeric",
             }).format(date);
-            const formattedTime = Intl.DateTimeFormat("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-            }).format(date);
 
             return (
                 <div className="text-right">
                     <div className="text-sm font-medium">{formattedDate}</div>
-                    <div className="text-xs text-muted-foreground">
-                        {formattedTime}
-                    </div>
                 </div>
+            );
+        },
+    },
+    {
+        accessorKey: "action",
+        header: () => <div className="text-center font-semibold">Action</div>,
+        cell: ({ row }) => {
+            return (
+                <DeleteTransactionCell
+                    transactionId={row.original.id}
+                    onDelete={onDeleteTransaction}
+                    isDeleting={isDeleting}
+                />
             );
         },
     },

@@ -7,26 +7,13 @@ import {
     TransactionWithCategoryZodSchema,
 } from "@/zod/transactionSchemas";
 
-// async function getData(): Promise<TransactionWithCategoryType[]> {
-//     const status = ["INCOME", "EXPENSE"] as const;
-//     // Fetch data from your API here.
-//     return Array.from({ length: 100 }, (_, i) => ({
-//         id: Math.floor(Math.random() * 1000),
-//         amount: Math.floor(Math.random() * 10000) / 100,
-//         description: `Transaction Transaction Transaction ${i + 1}`,
-//         date: new Date().toISOString(),
-//         type: status[Math.floor(Math.random() * status.length)],
-//         category_id: Math.floor(Math.random() * 100),
-//         category_name: `Category ${Math.floor(Math.random() * 100)}`,
-//         created_at: new Date().toISOString(),
-//     }));
-// }
-
 interface TransactionTableProps {
     transactions: TransactionWithCategoryType[] | null;
     isLoading: boolean;
     isError: boolean;
     error: string | null;
+    onDeleteTransaction: (transactionId: number) => Promise<void>;
+    isDeleting: boolean;
 }
 
 export default function TransactionTable({
@@ -34,6 +21,8 @@ export default function TransactionTable({
     isLoading,
     isError,
     error,
+    onDeleteTransaction,
+    isDeleting,
 }: TransactionTableProps) {
     const [data, setData] = React.useState<TransactionWithCategoryType[]>([]);
     const [transactionValidationError, setTransactionValidationError] =
@@ -88,7 +77,10 @@ export default function TransactionTable({
 
     return (
         <div className="w-full">
-            <DataTable columns={columns} data={data} />
+            <DataTable
+                columns={columns(onDeleteTransaction, isDeleting)}
+                data={data}
+            />
         </div>
     );
 }

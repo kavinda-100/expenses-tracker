@@ -81,6 +81,15 @@ const TransactionsScreen = () => {
         mutationAsync: createTransactionAsync,
     } = useTauriMutation<string, string>();
 
+    // Tauri mutation for deleting transaction.
+    const {
+        data: _deleteTransactionData,
+        loading: isDeleteTransactionLoading,
+        error: _deleteTransactionError,
+        isError: _isDeleteTransactionError,
+        mutationAsync: deleteTransactionAsync,
+    } = useTauriMutation<string, string>();
+
     // Fetch category names on component mount only
     React.useEffect(() => {
         queryCategoryNamesAsync("get_categories_names");
@@ -169,6 +178,17 @@ const TransactionsScreen = () => {
                 type: validatedData.data.type,
                 category_id: validatedData.data.category_id,
             },
+        });
+
+        // refetch transactions to update the table
+        await refetchTransactions();
+    };
+
+    // delete transaction handler
+    const handleDeleteTransaction = async (transactionId: number) => {
+        // invoke Tauri command to delete transaction
+        await deleteTransactionAsync("delete_transaction", {
+            transactionId: transactionId,
         });
 
         // refetch transactions to update the table
@@ -383,6 +403,8 @@ const TransactionsScreen = () => {
                 isLoading={isTransactionsLoading}
                 isError={transactionsIsError}
                 error={transactionsError}
+                onDeleteTransaction={handleDeleteTransaction}
+                isDeleting={isDeleteTransactionLoading}
             />
         </div>
     );
