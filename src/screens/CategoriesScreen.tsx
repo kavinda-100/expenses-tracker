@@ -26,6 +26,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
     CategoryType,
@@ -348,6 +353,7 @@ const CategoriesScreen = () => {
                                                         {c.name}
                                                     </span>
                                                     <div className="flex space-x-2">
+                                                        {/* rename category button */}
                                                         <RenameCategoryDialog
                                                             id={c.id}
                                                             oldName={c.name}
@@ -356,24 +362,37 @@ const CategoriesScreen = () => {
                                                             }
                                                         />
 
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => {
-                                                                setCategoryIdToDelete(
-                                                                    c.id,
-                                                                );
-                                                                setOpenDeleteDialog(
-                                                                    true,
-                                                                );
-                                                            }}
-                                                            disabled={
-                                                                isDeleteCategoryLoading
-                                                            }
-                                                            className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                        {/* delete category button */}
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={() => {
+                                                                        setCategoryIdToDelete(
+                                                                            c.id,
+                                                                        );
+                                                                        setOpenDeleteDialog(
+                                                                            true,
+                                                                        );
+                                                                    }}
+                                                                    disabled={
+                                                                        isDeleteCategoryLoading
+                                                                    }
+                                                                    className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>
+                                                                    Delete
+                                                                    Category
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     </div>
                                                 </li>
                                             ))
@@ -422,6 +441,7 @@ const CategoriesScreen = () => {
                                                     </span>
 
                                                     <div className="flex space-x-2">
+                                                        {/* rename category button */}
                                                         <RenameCategoryDialog
                                                             id={c.id}
                                                             oldName={c.name}
@@ -430,24 +450,37 @@ const CategoriesScreen = () => {
                                                             }
                                                         />
 
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            onClick={() => {
-                                                                setCategoryIdToDelete(
-                                                                    c.id,
-                                                                );
-                                                                setOpenDeleteDialog(
-                                                                    true,
-                                                                );
-                                                            }}
-                                                            disabled={
-                                                                isDeleteCategoryLoading
-                                                            }
-                                                            className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
-                                                        >
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
+                                                        {/* delete category button */}
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    onClick={() => {
+                                                                        setCategoryIdToDelete(
+                                                                            c.id,
+                                                                        );
+                                                                        setOpenDeleteDialog(
+                                                                            true,
+                                                                        );
+                                                                    }}
+                                                                    disabled={
+                                                                        isDeleteCategoryLoading
+                                                                    }
+                                                                    className="text-destructive h-8 w-8 hover:bg-destructive/10 cursor-pointer"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>
+                                                                    Delete
+                                                                    Category
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     </div>
                                                 </li>
                                             ))
@@ -522,10 +555,17 @@ const RenameCategoryDialog = ({
         <>
             {/* Rename Category dialog */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <SquarePenIcon className="h-4 w-4" />
-                    </Button>
+                <DialogTrigger>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <SquarePenIcon className="h-4 w-4" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Rename Category</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>

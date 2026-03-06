@@ -27,7 +27,11 @@
 - [x] Implement the budget management screen in the frontend (React).
     - [x] spent amount progress bar for each budget item.
     - [x] prompt a confirmation dialog before deleting a budget that has transactions associated with it.
-    - [ ] add a update budget feature.
-- [ ] Implement the transaction management screen in the frontend (React).
+    - [x] add a update budget feature.
+- [x] Implement the transaction management screen in the frontend (React).
+    - [x] add transaction dialog form for creating a new transaction.
+    - [ ] add a transaction table to display the transactions with pagination (separate component).
+    - [ ] add a delete transaction feature with a confirmation dialog.
+    - [ ] add a update transaction feature.
 - [ ] Implement the dashboard screen in the frontend (React).
 - [ ] Implement the report screen in the frontend (React).

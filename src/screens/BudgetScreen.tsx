@@ -16,6 +16,7 @@ import {
     RefreshCcwIcon,
     LoaderIcon,
     TrashIcon,
+    SquarePenIcon,
 } from "lucide-react";
 import {
     Select,
@@ -28,6 +29,7 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -39,12 +41,17 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import ScreenHeader from "@/components/ScreenHeader";
+import ErrorMessageBox from "@/components/ErrorMessageBox";
 
 const BudgetScreen = () => {
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
     const [categoryNames, setCategoryNames] = React.useState<
         GetCategoryNamesType[]
     >([]);
@@ -53,6 +60,17 @@ const BudgetScreen = () => {
     const [amount, setAmount] = React.useState<number>(0);
     const [budget, setBudget] = React.useState<BudgetType[]>([]);
     const [budgetError, setBudgetError] = React.useState<string | null>(null);
+
+    // State for delete confirmation dialog - tracks which budget is being deleted
+    const [deletingBudgetId, setDeletingBudgetId] = React.useState<
+        number | null
+    >(null);
+
+    // State for update budget dialog - tracks which budget is being edited
+    const [editingBudgetId, setEditingBudgetId] = React.useState<number | null>(
+        null,
+    );
+    const [updateAmount, setUpdateAmount] = React.useState<number>(0);
 
     // Tauri query for fetching category names
     const {
@@ -91,6 +109,15 @@ const BudgetScreen = () => {
         isError: isDeleteBudgetError,
         loading: isDeleteBudgetLoading,
         mutationAsync: deleteBudgetAsync,
+    } = useTauriMutation<string, string>();
+
+    // tauri mutation for updating a budget
+    const {
+        data: updateBudgetData,
+        error: updateBudgetError,
+        isError: isUpdateBudgetError,
+        loading: isUpdateBudgetLoading,
+        mutationAsync: updateBudgetAsync,
     } = useTauriMutation<string, string>();
 
     // Fetch category names on component mount only
@@ -195,7 +222,34 @@ const BudgetScreen = () => {
             // After deleting a budget, refetch the budgets to update the list
             await refetchBudgetsAsync();
             // close the confirmation dialog
-            setIsDeleteDialogOpen(false);
+            setDeletingBudgetId(null);
+        }
+    };
+
+    // update budget function
+    const handleUpdateBudget = async (budgetId: number) => {
+        if (updateAmount <= 0 || isNaN(updateAmount)) {
+            return;
+        }
+
+        // Call the update budget mutation
+        await updateBudgetAsync("update_budget", {
+            updatedBudget: {
+                id: budgetId,
+                amount: updateAmount,
+            },
+        });
+
+        if (
+            !isUpdateBudgetLoading &&
+            !isUpdateBudgetError &&
+            updateBudgetData
+        ) {
+            // After updating a budget, refetch the budgets to update the list
+            await refetchBudgetsAsync();
+            // Reset update amount and close dialog
+            setUpdateAmount(0);
+            setEditingBudgetId(null);
         }
     };
 
@@ -360,77 +414,226 @@ const BudgetScreen = () => {
                                                 </p>
                                             )}
 
-                                            {/* delete budget */}
-                                            <Dialog
-                                                open={isDeleteDialogOpen}
-                                                onOpenChange={
-                                                    setIsDeleteDialogOpen
-                                                }
-                                            >
-                                                <DialogTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-destructive cursor-pointer"
-                                                    >
-                                                        <TrashIcon className="h-4 w-4" />
-                                                    </Button>
-                                                </DialogTrigger>
-                                                <DialogContent>
-                                                    <DialogHeader>
-                                                        <DialogTitle>
-                                                            Delete Budget
-                                                        </DialogTitle>
-                                                        <DialogDescription>
-                                                            Are you sure you
-                                                            want to delete this
-                                                            budget? This action
-                                                            cannot be undone.
-                                                        </DialogDescription>
-                                                        {isDeleteBudgetError &&
-                                                            deleteBudgetError && (
-                                                                <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20 mt-4">
-                                                                    <AlertCircle className="h-4 w-4" />
-                                                                    <p className="text-xs font-medium text-pretty">
-                                                                        {
+                                            <div className="flex space-x-2">
+                                                {/* Update budget */}
+                                                <Dialog
+                                                    open={
+                                                        editingBudgetId === b.id
+                                                    }
+                                                    onOpenChange={(open) => {
+                                                        if (open) {
+                                                            setEditingBudgetId(
+                                                                b.id,
+                                                            );
+                                                            setUpdateAmount(
+                                                                b.amount,
+                                                            );
+                                                        } else {
+                                                            setEditingBudgetId(
+                                                                null,
+                                                            );
+                                                            setUpdateAmount(0);
+                                                        }
+                                                    }}
+                                                >
+                                                    <DialogTrigger>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="cursor-pointer"
+                                                                >
+                                                                    <SquarePenIcon className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>
+                                                                    Update
+                                                                    Budget
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="sm:max-w-md">
+                                                        <DialogHeader>
+                                                            <DialogTitle>
+                                                                Update Budget
+                                                            </DialogTitle>
+                                                            <DialogDescription>
+                                                                Update the
+                                                                budget amount
+                                                                for this
+                                                                category. This
+                                                                will not affect
+                                                                the spent
+                                                                amount, only the
+                                                                budget limit.
+                                                            </DialogDescription>
+                                                            {isUpdateBudgetError &&
+                                                                updateBudgetError && (
+                                                                    <ErrorMessageBox
+                                                                        message={
+                                                                            updateBudgetError
+                                                                        }
+                                                                    />
+                                                                )}
+                                                        </DialogHeader>
+                                                        <div className="w-full space-y-4">
+                                                            {/* Update Budget Form */}
+                                                            <Input
+                                                                type="text"
+                                                                value={
+                                                                    updateAmount
+                                                                }
+                                                                onChange={(e) =>
+                                                                    setUpdateAmount(
+                                                                        Number(
+                                                                            e
+                                                                                .target
+                                                                                .value,
+                                                                        ),
+                                                                    )
+                                                                }
+                                                                placeholder="New budget amount"
+                                                                disabled={
+                                                                    isUpdateBudgetLoading
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <DialogFooter>
+                                                            <Button
+                                                                variant="outline"
+                                                                className="cursor-pointer"
+                                                                disabled={
+                                                                    isUpdateBudgetLoading
+                                                                }
+                                                                onClick={() => {
+                                                                    setEditingBudgetId(
+                                                                        null,
+                                                                    );
+                                                                    setUpdateAmount(
+                                                                        0,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                No, Cancel
+                                                            </Button>
+                                                            <Button
+                                                                className="cursor-pointer"
+                                                                disabled={
+                                                                    isUpdateBudgetLoading
+                                                                }
+                                                                onClick={() =>
+                                                                    handleUpdateBudget(
+                                                                        b.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {isUpdateBudgetLoading
+                                                                    ? "Updating..."
+                                                                    : "Yes, Update"}
+                                                            </Button>
+                                                        </DialogFooter>
+                                                    </DialogContent>
+                                                </Dialog>
+
+                                                {/* delete budget */}
+                                                <Dialog
+                                                    open={
+                                                        deletingBudgetId ===
+                                                        b.id
+                                                    }
+                                                    onOpenChange={(open) => {
+                                                        if (open) {
+                                                            setDeletingBudgetId(
+                                                                b.id,
+                                                            );
+                                                        } else {
+                                                            setDeletingBudgetId(
+                                                                null,
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    <DialogTrigger>
+                                                        <Tooltip>
+                                                            <TooltipTrigger
+                                                                asChild
+                                                            >
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    className="text-destructive cursor-pointer"
+                                                                >
+                                                                    <TrashIcon className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>
+                                                                    Delete
+                                                                    Budget
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="sm:max-w-md">
+                                                        <DialogHeader>
+                                                            <DialogTitle>
+                                                                Delete Budget
+                                                            </DialogTitle>
+                                                            <DialogDescription>
+                                                                Are you sure you
+                                                                want to delete
+                                                                this budget?
+                                                                This action
+                                                                cannot be
+                                                                undone.
+                                                            </DialogDescription>
+                                                            {isDeleteBudgetError &&
+                                                                deleteBudgetError && (
+                                                                    <ErrorMessageBox
+                                                                        message={
                                                                             deleteBudgetError
                                                                         }
-                                                                    </p>
-                                                                </div>
-                                                            )}
-                                                    </DialogHeader>
-                                                    <div className="flex justify-end gap-2">
-                                                        <Button
-                                                            variant="outline"
-                                                            onClick={() =>
-                                                                setIsDeleteDialogOpen(
-                                                                    false,
-                                                                )
-                                                            }
-                                                            disabled={
-                                                                isDeleteBudgetLoading
-                                                            }
-                                                        >
-                                                            No, Cancel
-                                                        </Button>
-                                                        <Button
-                                                            variant="destructive"
-                                                            disabled={
-                                                                isDeleteBudgetLoading
-                                                            }
-                                                            onClick={() =>
-                                                                handleDeleteBudget(
-                                                                    b.id,
-                                                                )
-                                                            }
-                                                        >
-                                                            {isDeleteBudgetLoading
-                                                                ? "Deleting..."
-                                                                : "Yes, Delete"}
-                                                        </Button>
-                                                    </div>
-                                                </DialogContent>
-                                            </Dialog>
+                                                                    />
+                                                                )}
+                                                        </DialogHeader>
+                                                        <div className="flex justify-end gap-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                onClick={() =>
+                                                                    setDeletingBudgetId(
+                                                                        null,
+                                                                    )
+                                                                }
+                                                                disabled={
+                                                                    isDeleteBudgetLoading
+                                                                }
+                                                            >
+                                                                No, Cancel
+                                                            </Button>
+                                                            <Button
+                                                                variant="destructive"
+                                                                disabled={
+                                                                    isDeleteBudgetLoading
+                                                                }
+                                                                onClick={() =>
+                                                                    handleDeleteBudget(
+                                                                        b.id,
+                                                                    )
+                                                                }
+                                                            >
+                                                                {isDeleteBudgetLoading
+                                                                    ? "Deleting..."
+                                                                    : "Yes, Delete"}
+                                                            </Button>
+                                                        </div>
+                                                    </DialogContent>
+                                                </Dialog>
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -490,19 +693,32 @@ const BudgetScreen = () => {
                                         <Label htmlFor="category">
                                             Category
                                         </Label>
-                                        <Button
-                                            variant="ghost"
-                                            size="xs"
-                                            className="mt-1 cursor-pointer"
-                                            onClick={refetchCategoryNamesAsync}
-                                            disabled={isCategoryNamesRefetching}
-                                        >
-                                            {isCategoryNamesRefetching ? (
-                                                <LoaderIcon className="animate-spin h-4 w-4" />
-                                            ) : (
-                                                <RefreshCcwIcon className="h-4 w-4" />
-                                            )}
-                                        </Button>
+
+                                        {/*  Refresh Button */}
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="xs"
+                                                    className="mt-1 cursor-pointer"
+                                                    onClick={
+                                                        refetchCategoryNamesAsync
+                                                    }
+                                                    disabled={
+                                                        isCategoryNamesRefetching
+                                                    }
+                                                >
+                                                    {isCategoryNamesRefetching ? (
+                                                        <LoaderIcon className="animate-spin h-4 w-4" />
+                                                    ) : (
+                                                        <RefreshCcwIcon className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>Refresh Categories</p>
+                                            </TooltipContent>
+                                        </Tooltip>
                                     </div>
                                     <Select
                                         value={
