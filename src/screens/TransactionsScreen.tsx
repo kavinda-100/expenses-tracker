@@ -127,7 +127,7 @@ const TransactionsScreen = () => {
         const transactionData = {
             amount,
             description,
-            date: date ? date.toISOString() : "", // convert to ISO string (backend expects ISO 8601 format)
+            date: date ? date.toISOString() : new Date().toISOString(), // convert to ISO string (backend expects ISO 8601 format)
             type,
             category_id: categoryId,
         };

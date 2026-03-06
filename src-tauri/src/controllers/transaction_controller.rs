@@ -126,7 +126,7 @@ pub fn get_all_transactions_with_category(
              FROM transactions t
              JOIN categories c ON t.category_id = c.id
              WHERE date(t.date) BETWEEN date(?1) AND date(?2)
-             ORDER BY date(t.date) DESC;",
+             ORDER BY date(t.date) ASC;",
         )
         .map_err(|e| format!("Failed to prepare statement: {}", e))?;
 
