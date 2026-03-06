@@ -110,6 +110,30 @@ const CategoriesScreen = () => {
         }
     }, [categories]);
 
+    // use effect to reset the state after creating a new category successfully.
+    React.useEffect(() => {
+        if (
+            !isCreateCategoryLoading &&
+            !isCreateCategoryError &&
+            !createCategoryError
+        ) {
+            setName("");
+            setType("EXPENSE");
+        }
+    }, [createCategoryError, isCreateCategoryError, isCreateCategoryLoading]);
+
+    // use effect to reset the state after deleting a category successfully (close confirmation dialog and reset categoryIdToDelete)
+    React.useEffect(() => {
+        if (
+            !isDeleteCategoryLoading &&
+            !isDeleteCategoryError &&
+            !deleteCategoryError
+        ) {
+            setOpenDeleteDialog(false);
+            setCategoryIdToDelete(null);
+        }
+    }, [deleteCategoryError, isDeleteCategoryError, isDeleteCategoryLoading]);
+
     // handler for adding a new category
     const handleAddCategory = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -131,9 +155,6 @@ const CategoriesScreen = () => {
         });
         // refetch categories after adding a new one
         await refetchCategories();
-        // reset form fields
-        setName("");
-        setType("EXPENSE");
     };
 
     // handler for deleting a category
@@ -144,9 +165,6 @@ const CategoriesScreen = () => {
         });
         // refetch categories after deleting one
         await refetchCategories();
-        // close the delete confirmation dialog and reset the categoryIdToDelete state
-        setOpenDeleteDialog(false);
-        setCategoryIdToDelete(null);
     };
 
     return (
