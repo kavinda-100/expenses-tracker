@@ -49,6 +49,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import ScreenHeader from "@/components/ScreenHeader";
+import ErrorMessageBox from "@/components/ErrorMessageBox";
 
 const BudgetScreen = () => {
     const [categoryNames, setCategoryNames] = React.useState<
@@ -456,7 +457,7 @@ const BudgetScreen = () => {
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </DialogTrigger>
-                                                    <DialogContent>
+                                                    <DialogContent className="sm:max-w-md">
                                                         <DialogHeader>
                                                             <DialogTitle>
                                                                 Update Budget
@@ -473,14 +474,11 @@ const BudgetScreen = () => {
                                                             </DialogDescription>
                                                             {isUpdateBudgetError &&
                                                                 updateBudgetError && (
-                                                                    <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20 mt-4">
-                                                                        <AlertCircle className="h-4 w-4" />
-                                                                        <p className="text-xs font-medium text-pretty">
-                                                                            {
-                                                                                updateBudgetError
-                                                                            }
-                                                                        </p>
-                                                                    </div>
+                                                                    <ErrorMessageBox
+                                                                        message={
+                                                                            updateBudgetError
+                                                                        }
+                                                                    />
                                                                 )}
                                                         </DialogHeader>
                                                         <div className="w-full space-y-4">
@@ -581,7 +579,7 @@ const BudgetScreen = () => {
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </DialogTrigger>
-                                                    <DialogContent>
+                                                    <DialogContent className="sm:max-w-md">
                                                         <DialogHeader>
                                                             <DialogTitle>
                                                                 Delete Budget
@@ -596,14 +594,11 @@ const BudgetScreen = () => {
                                                             </DialogDescription>
                                                             {isDeleteBudgetError &&
                                                                 deleteBudgetError && (
-                                                                    <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive border border-destructive/20 mt-4">
-                                                                        <AlertCircle className="h-4 w-4" />
-                                                                        <p className="text-xs font-medium text-pretty">
-                                                                            {
-                                                                                deleteBudgetError
-                                                                            }
-                                                                        </p>
-                                                                    </div>
+                                                                    <ErrorMessageBox
+                                                                        message={
+                                                                            deleteBudgetError
+                                                                        }
+                                                                    />
                                                                 )}
                                                         </DialogHeader>
                                                         <div className="flex justify-end gap-2">
