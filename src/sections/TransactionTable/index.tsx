@@ -21,15 +21,36 @@ async function getData(): Promise<TransactionWithCategoryType[]> {
 
 export default function TransactionTable() {
     const [data, setData] = React.useState<TransactionWithCategoryType[]>([]);
+    const [isLoading, setIsLoading] = React.useState(true);
 
     const fetchData = async () => {
-        const data = await getData();
-        return data;
+        setIsLoading(true);
+        try {
+            const data = await getData();
+            setData(data);
+        } catch (error) {
+            console.error("Failed to fetch transactions:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     React.useEffect(() => {
-        fetchData().then((data) => setData(data));
+        fetchData();
     }, []);
+
+    if (isLoading) {
+        return (
+            <div className="w-full rounded-lg border bg-card shadow-sm p-8">
+                <div className="flex flex-col items-center justify-center gap-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p className="text-sm text-muted-foreground">
+                        Loading transactions...
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">
