@@ -8,6 +8,11 @@ import {
     TrendingDown,
     Tag,
     Calendar,
+    Hash,
+    FileText,
+    Repeat2,
+    DollarSign,
+    Settings,
 } from "lucide-react";
 import DeleteTransactionCell from "./DeleteTransactionCell";
 
@@ -27,6 +32,7 @@ export const columns = (
                         }
                         className="font-semibold"
                     >
+                        <Hash className="mr-2 h-3.5 w-3.5" />
                         ID
                         <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
                     </Button>
@@ -64,7 +70,10 @@ export const columns = (
     {
         accessorKey: "description",
         header: () => (
-            <div className="text-left font-semibold">Description</div>
+            <div className="text-left font-semibold flex items-center gap-2">
+                <FileText className="h-4 w-4" />
+                Description
+            </div>
         ),
         cell: ({ row }) => {
             const description = row.original.description || "No description";
@@ -79,7 +88,12 @@ export const columns = (
     },
     {
         accessorKey: "type",
-        header: () => <div className="text-center font-semibold">Type</div>,
+        header: () => (
+            <div className="text-center font-semibold flex items-center justify-center gap-2">
+                <Repeat2 className="h-4 w-4" />
+                Type
+            </div>
+        ),
         cell: ({ row }) => {
             const type = row.original.type;
 
@@ -121,6 +135,7 @@ export const columns = (
                         }
                         className="font-semibold"
                     >
+                        <DollarSign className="mr-2 h-3.5 w-3.5" />
                         Amount
                         <ArrowUpDown className="ml-2 h-3.5 w-3.5" />
                     </Button>
@@ -176,7 +191,12 @@ export const columns = (
     },
     {
         accessorKey: "action",
-        header: () => <div className="text-center font-semibold">Action</div>,
+        header: () => (
+            <div className="text-center font-semibold flex items-center justify-center gap-2">
+                <Settings className="h-4 w-4" />
+                Action
+            </div>
+        ),
         cell: ({ row }) => {
             return (
                 <DeleteTransactionCell
