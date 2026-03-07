@@ -1,7 +1,7 @@
 import React from "react";
 import {
-    MonthlyOverviewType,
-    MonthlyOverviewZodSchema,
+    YearlyOverviewType,
+    YearlyOverviewZodSchema,
 } from "@/zod/reportSchemas";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
@@ -32,37 +32,35 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-// Helper function to convert day number to day string (e.g., 1 -> "Monday", 2 -> "Tuesday", etc.)
-const convertNumberToDay = (day: number) => {
-    const month = new Date().getMonth(); // get current month
+// Helper function to convert month number to month string (e.g., 0 -> "January", 1 -> "February", etc.)
+const convertNumberToMonth = (month: number) => {
     const year = new Date().getFullYear(); // get current year
-    const date = new Date(year, month, day); // create a date object with the given day, current month and year
-    // return the day of the week as a string (e.g., "Monday", "Tuesday", etc.)
-    return Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+    const date = new Date(year, month); // create a date object with the given month and current year
+    // return the month name as a string (e.g., "January", "February", etc.)
+    return Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
 };
 
-const MonthlyOverview = () => {
-    // State for monthly overview data
-    const [monthlyOverviewData, setMonthlyOverviewData] = React.useState<
-        MonthlyOverviewType[]
+const YearlyOverview = () => {
+    // State for yearly overview data
+    const [yearlyOverviewData, setYearlyOverviewData] = React.useState<
+        YearlyOverviewType[]
     >([]);
     const [validationError, setValidationError] = React.useState<string | null>(
         null,
     );
-    // Tauri query for monthly overview data
+    // Tauri query for yearly overview data
     const {
-        data: monthlyOverviewQueryData,
-        loading: monthlyOverviewQueryLoading,
-        isError: monthlyOverviewQueryIsError,
-        error: monthlyOverviewQueryError,
-        queryAsync: monthlyOverviewQueryAsync,
-    } = useTauriQuery<MonthlyOverviewType[], string>();
+        data: yearlyOverviewQueryData,
+        loading: yearlyOverviewQueryLoading,
+        isError: yearlyOverviewQueryIsError,
+        error: yearlyOverviewQueryError,
+        queryAsync: yearlyOverviewQueryAsync,
+    } = useTauriQuery<YearlyOverviewType[], string>();
 
-    // Effect to fetch monthly overview data on mount
+    // Effect to fetch yearly overview data on mount
     React.useEffect(() => {
-        monthlyOverviewQueryAsync("get_monthly_overview", {
+        yearlyOverviewQueryAsync("get_yearly_overview", {
             request: {
-                month: new Date().getMonth() + 1, // get current month (0-indexed, so add 1)
                 year: new Date().getFullYear(), // get current year
             },
         });
@@ -70,39 +68,39 @@ const MonthlyOverview = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Effect to handle monthly overview query data and validate it with Zod
+    // Effect to handle yearly overview query data and validate it with Zod
     React.useEffect(() => {
-        if (monthlyOverviewQueryData) {
-            const parsedData = MonthlyOverviewZodSchema.array().safeParse(
-                monthlyOverviewQueryData,
+        if (yearlyOverviewQueryData) {
+            const parsedData = YearlyOverviewZodSchema.array().safeParse(
+                yearlyOverviewQueryData,
             );
             if (!parsedData.success) {
                 console.error(
-                    "Failed to parse monthly overview data:",
+                    "Failed to parse yearly overview data:",
                     parsedData.error,
                 );
                 setValidationError(
-                    "Failed to load monthly overview data. Please try again.",
+                    "Failed to load yearly overview data. Please try again.",
                 );
                 return;
             }
-            setMonthlyOverviewData(parsedData.data);
-            // console.log("Parsed monthly overview data:", parsedData.data);
+            setYearlyOverviewData(parsedData.data);
+            // console.log("Parsed yearly overview data:", parsedData.data);
         }
-    }, [monthlyOverviewQueryData]);
+    }, [yearlyOverviewQueryData]);
 
     // handle loading states
-    if (monthlyOverviewQueryLoading) {
+    if (yearlyOverviewQueryLoading) {
         return <div>Loading...</div>;
     }
 
     // handle error states
-    if (monthlyOverviewQueryIsError) {
+    if (yearlyOverviewQueryIsError) {
         return (
             <ErrorMessageBox
                 message={
-                    monthlyOverviewQueryError ||
-                    "An error occurred while fetching monthly overview data."
+                    yearlyOverviewQueryError ||
+                    "An error occurred while fetching yearly overview data."
                 }
             />
         );
@@ -116,10 +114,10 @@ const MonthlyOverview = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Monthly Overview</CardTitle>
+                <CardTitle>Yearly Overview</CardTitle>
                 <CardDescription>
-                    A bar chart showing total income and expenses for the This
-                    month.
+                    A bar chart showing total income and expenses for the this
+                    year.
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -127,14 +125,16 @@ const MonthlyOverview = () => {
                     config={chartConfig}
                     className="aspect-auto h-100 w-full"
                 >
-                    <BarChart accessibilityLayer data={monthlyOverviewData}>
+                    <BarChart accessibilityLayer data={yearlyOverviewData}>
                         <CartesianGrid vertical={false} />
                         <XAxis
-                            dataKey="day"
+                            dataKey="month"
                             tickLine={false}
                             tickMargin={10}
                             axisLine={false}
-                            tickFormatter={(value) => convertNumberToDay(value)}
+                            tickFormatter={(value) =>
+                                convertNumberToMonth(value)
+                            }
                         />
                         <ChartTooltip
                             cursor={false}
@@ -155,11 +155,11 @@ const MonthlyOverview = () => {
             </CardContent>
             <CardFooter>
                 <div className="leading-none text-muted-foreground">
-                    Showing total income and expenses for the this month.
+                    Showing total income and expenses for the this year.
                 </div>
             </CardFooter>
         </Card>
     );
 };
 
-export default MonthlyOverview;
+export default YearlyOverview;
