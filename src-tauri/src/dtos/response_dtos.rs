@@ -72,6 +72,12 @@ pub struct ExpenseByCategoryResponseDto {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct IncomeByCategoryResponseDto {
+    pub category_name: String,
+    pub total_income: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MonthlyOverviewResponseDto {
     pub month: u8,
     pub total_income: f64,

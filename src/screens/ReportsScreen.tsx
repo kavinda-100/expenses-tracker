@@ -1,5 +1,6 @@
 import ScreenHeader from "@/components/ScreenHeader";
 import GetExpenseByCategory from "@/sections/report/GetExpenseByCategory";
+import GetIncomeByCategory from "@/sections/report/GetIncomeByCategory";
 
 const ReportsScreen = () => {
     return (
@@ -7,13 +8,15 @@ const ReportsScreen = () => {
             {/* Header */}
             <ScreenHeader
                 title="Reports"
-                description="View and analyze your expense reports"
+                description="View and analyze your expense and income reports"
             />
 
             {/* First section */}
-            <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Expense Overview */}
                 <GetExpenseByCategory />
+                {/* Income Overview */}
+                <GetIncomeByCategory />
             </div>
         </div>
     );

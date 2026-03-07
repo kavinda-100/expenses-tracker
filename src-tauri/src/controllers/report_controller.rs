@@ -5,8 +5,7 @@ use crate::dtos::request_dtos::{
     YearlyOverviewRequestDto,
 };
 use crate::dtos::response_dtos::{
-    ExpenseByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto,
-    MonthlyOverviewResponseDto, YearlyOverviewResponseDto,
+    ExpenseByCategoryResponseDto, IncomeByCategoryResponseDto, LastMonthHabitsResponseDto, LastYearHabitsResponseDto, MonthlyOverviewResponseDto, YearlyOverviewResponseDto
 };
 use crate::helpers::helper::get_db_file_path;
 
@@ -50,6 +49,48 @@ pub fn get_expense_by_category() -> Result<Vec<ExpenseByCategoryResponseDto>, St
 
     // Return the total expenses by category
     Ok(expense_by_category)
+}
+
+/**
+ * Get total income grouped by category for
+ * @return Result<Vec<IncomeByCategoryResponseDto>, String> - Ok(Vec<IncomeByCategoryResponseDto>) if the data was retrieved successfully,
+ * otherwise an error message is returned as a String
+ */
+#[tauri::command]
+pub fn get_income_by_category() -> Result<Vec<IncomeByCategoryResponseDto>, String> {
+    // Get the path to the database file
+    let db_file = get_db_file_path();
+
+    // Open database connection and query for total income and expenses
+    let conn = Connection::open(db_file).map_err(|e| format!("Failed to open database: {}", e))?;
+
+    // Query total income grouped by category
+    let mut stmt = conn
+        .prepare(
+            "SELECT c.name, IFNULL(SUM(t.amount), 0) as total_income
+        FROM categories c
+        LEFT JOIN transactions t ON c.id = t.category_id AND c.type = 'INCOME'
+        GROUP BY c.id",
+        )
+        .map_err(|e| format!("Failed to prepare statement: {}", e))?;
+
+    // Execute the query and map the results to IncomeByCategoryResponseDto structs
+    let income_by_category_iter = stmt
+        .query_map([], |row| {
+            Ok(IncomeByCategoryResponseDto {
+                category_name: row.get(0)?,
+                total_income: row.get(1)?,
+            })
+        })
+        .map_err(|e| format!("Failed to query income by category: {}", e))?;
+
+    // Collect the results into a vector, handling any mapping errors
+    let income_by_category: Vec<IncomeByCategoryResponseDto> = income_by_category_iter
+        .collect::<Result<Vec<IncomeByCategoryResponseDto>, rusqlite::Error>>()
+        .map_err(|e| format!("Failed to collect income by category: {}", e))?;
+
+    // Return the total income by category
+    Ok(income_by_category)
 }
 
 /**
