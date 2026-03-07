@@ -43,4 +43,4 @@
 - [x] Implement the settings screen in the frontend (React).
     - [x] add a theme selection option (light, dark).
     - [x] add a currency selection option.
-    - [ ] add a data clear option with a confirmation dialog to clear all data (transactions, categories, budgets).
+    - [x] add a data clear option with a confirmation dialog to clear all data (transactions, categories, budgets).
