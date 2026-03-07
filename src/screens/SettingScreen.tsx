@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import React from "react";
 import ScreenHeader from "@/components/ScreenHeader";
+import ClearData from "@/sections/settings/ClearData";
 
 const SettingScreen = () => {
     const [selectedCurrency, setSelectedCurrency] =
@@ -133,9 +134,7 @@ const SettingScreen = () => {
                                 Remove all transactions, budgets, and categories
                             </div>
                         </div>
-                        <Button variant="destructive" className="w-36">
-                            Clear Data
-                        </Button>
+                        <ClearData />
                     </div>
 
                     <Separator />
