@@ -149,12 +149,12 @@ const PastSevenDaysData = () => {
                         />
                         <Bar
                             dataKey="total_expense"
-                            fill="var(--color-expense)"
+                            fill="var(--color-total_expense)"
                             radius={4}
                         />
                         <Bar
                             dataKey="total_income"
-                            fill="var(--color-income)"
+                            fill="var(--color-total_income)"
                             radius={4}
                         />
                     </BarChart>
