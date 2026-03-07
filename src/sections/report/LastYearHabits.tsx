@@ -1,7 +1,7 @@
 import React from "react";
 import {
-    LastMonthHabitsZodSchema,
-    LastMonthHabitsType,
+    LastYearHabitsZodSchema,
+    LastYearHabitsType,
 } from "@/zod/reportSchemas";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
@@ -36,28 +36,27 @@ const chartConfig = {
     },
 } satisfies ChartConfig;
 
-const LastMonthHabits = () => {
-    // State for last month habits data
-    const [lastMonthHabitsData, setLastMonthHabitsData] = React.useState<
-        LastMonthHabitsType[]
+const LastYearHabits = () => {
+    // State for last year habits data
+    const [lastYearHabitsData, setLastYearHabitsData] = React.useState<
+        LastYearHabitsType[]
     >([]);
     const [validationError, setValidationError] = React.useState<string | null>(
         null,
     );
-    // Tauri query for last month habits data
+    // Tauri query for last year habits data
     const {
-        data: lastMonthHabitsQueryData,
-        loading: lastMonthHabitsQueryLoading,
-        isError: lastMonthHabitsQueryIsError,
-        error: lastMonthHabitsQueryError,
-        queryAsync: lastMonthHabitsQueryAsync,
-    } = useTauriQuery<LastMonthHabitsType[], string>();
+        data: lastYearHabitsQueryData,
+        loading: lastYearHabitsQueryLoading,
+        isError: lastYearHabitsQueryIsError,
+        error: lastYearHabitsQueryError,
+        queryAsync: lastYearHabitsQueryAsync,
+    } = useTauriQuery<LastYearHabitsType[], string>();
 
-    // Effect to fetch last month habits data on mount
+    // Effect to fetch last year habits data on mount
     React.useEffect(() => {
-        lastMonthHabitsQueryAsync("get_last_month_habits", {
+        lastYearHabitsQueryAsync("get_last_year_habits", {
             request: {
-                month: new Date().getMonth() + 1, // get last month (0-indexed, so no need to add 1)
                 year: new Date().getFullYear(), // get current year
             },
         });
@@ -65,41 +64,41 @@ const LastMonthHabits = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Effect to handle last month habits query data and validate it with Zod
+    // Effect to handle last year habits query data and validate it with Zod
     React.useEffect(() => {
-        if (lastMonthHabitsQueryData) {
-            const parsedData = LastMonthHabitsZodSchema.array().safeParse(
-                lastMonthHabitsQueryData,
+        if (lastYearHabitsQueryData) {
+            const parsedData = LastYearHabitsZodSchema.array().safeParse(
+                lastYearHabitsQueryData,
             );
             if (!parsedData.success) {
                 console.error(
-                    "Failed to parse last month habits data:",
+                    "Failed to parse last year habits data:",
                     parsedData.error,
                 );
                 setValidationError(
-                    "Failed to load last month habits data. Please try again.",
+                    "Failed to load last year habits data. Please try again.",
                 );
-                setLastMonthHabitsData([]);
+                setLastYearHabitsData([]);
             } else {
-                setLastMonthHabitsData(parsedData.data);
+                setLastYearHabitsData(parsedData.data);
                 setValidationError(null);
-                // console.log("Parsed last month habits data:", parsedData.data);
+                // console.log("Parsed last year habits data:", parsedData.data);
             }
         }
-    }, [lastMonthHabitsQueryData]);
+    }, [lastYearHabitsQueryData]);
 
     // handle loading states
-    if (lastMonthHabitsQueryLoading) {
+    if (lastYearHabitsQueryLoading) {
         return <div>Loading...</div>;
     }
 
     // handle error states
-    if (lastMonthHabitsQueryIsError) {
+    if (lastYearHabitsQueryIsError) {
         return (
             <ErrorMessageBox
                 message={
-                    lastMonthHabitsQueryError ||
-                    "An unknown error occurred while loading last month habits data. Please try again."
+                    lastYearHabitsQueryError ||
+                    "An unknown error occurred while loading last year habits data. Please try again."
                 }
             />
         );
@@ -113,17 +112,17 @@ const LastMonthHabits = () => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>This month's spending habits</CardTitle>
+                <CardTitle>This year's spending habits</CardTitle>
                 <CardDescription>
                     An area chart showing your spending habits for the this
-                    month.
+                    year.
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="h-100 w-full">
                     <AreaChart
                         accessibilityLayer
-                        data={lastMonthHabitsData}
+                        data={lastYearHabitsData}
                         margin={{
                             left: 12,
                             right: 12,
@@ -154,7 +153,7 @@ const LastMonthHabits = () => {
             <CardFooter>
                 <div>
                     <div className="flex items-center gap-2 leading-none text-muted-foreground">
-                        Spending habits for the this month.
+                        Spending habits for the this year.
                     </div>
                 </div>
             </CardFooter>
@@ -162,4 +161,4 @@ const LastMonthHabits = () => {
     );
 };
 
-export default LastMonthHabits;
+export default LastYearHabits;

@@ -2,6 +2,7 @@ import ScreenHeader from "@/components/ScreenHeader";
 import GetExpenseByCategory from "@/sections/report/GetExpenseByCategory";
 import GetIncomeByCategory from "@/sections/report/GetIncomeByCategory";
 import LastMonthHabits from "@/sections/report/LastMonthHabits";
+import LastYearHabits from "@/sections/report/LastYearHabits";
 import MonthlyOverview from "@/sections/report/MonthlyOverview";
 import YearlyOverview from "@/sections/report/YearlyOverview";
 
@@ -30,6 +31,9 @@ const ReportsScreen = () => {
 
             {/* Last month habits */}
             <LastMonthHabits />
+
+            {/* Last year habits */}
+            <LastYearHabits />
         </div>
     );
 };
