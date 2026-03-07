@@ -51,3 +51,27 @@ export const YearlyOverviewZodSchema = z.object({
 });
 
 export type YearlyOverviewType = z.infer<typeof YearlyOverviewZodSchema>;
+
+// pub struct LastMonthHabitsResponseDto {
+//     pub category_name: String,
+//     pub total_amount: f64,
+// }
+
+export const LastMonthHabitsZodSchema = z.object({
+    category_name: z.string(),
+    total_amount: z.number(),
+});
+
+export type LastMonthHabitsType = z.infer<typeof LastMonthHabitsZodSchema>;
+
+// pub struct LastYearHabitsResponseDto {
+//     pub category_name: String,
+//     pub total_amount: f64,
+// }
+
+export const LastYearHabitsZodSchema = z.object({
+    category_name: z.string(),
+    total_amount: z.number(),
+});
+
+export type LastYearHabitsType = z.infer<typeof LastYearHabitsZodSchema>;
