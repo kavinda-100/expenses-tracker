@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { typeZodSchema } from ".";
 
 // pub struct DashboardOverviewResponseDto {
 //     pub total_income: f64,
@@ -27,3 +28,22 @@ export const PastSevenDaysDataZodSchema = z.object({
 });
 
 export type PastSevenDaysDataType = z.infer<typeof PastSevenDaysDataZodSchema>;
+
+// pub struct RecentTransactionsResponseDto {
+//     pub name: String,
+//     pub amount: f64,
+//     pub date: String,
+//     #[serde(rename = "type")]
+//     pub type_: String,
+// }
+
+export const RecentTransactionsZodSchema = z.object({
+    name: z.string(),
+    amount: z.number(),
+    date: z.string(),
+    type: typeZodSchema,
+});
+
+export type RecentTransactionsType = z.infer<
+    typeof RecentTransactionsZodSchema
+>;

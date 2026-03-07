@@ -5,7 +5,6 @@ import {
 } from "@/zod/dashboardSchemas";
 import { useTauriQuery } from "@/hooks/useTauriQuery";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
-import { TrendingUp } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
     Card,
