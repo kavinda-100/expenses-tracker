@@ -1,5 +1,7 @@
 import ScreenHeader from "@/components/ScreenHeader";
 import OverviewSection from "@/sections/Dashboard/OverviewSection";
+import PastSevenDaysData from "@/sections/Dashboard/PastSevenDaysData";
+import RecentTransactions from "@/sections/Dashboard/RecentTransactions";
 
 const HomeScreen = () => {
     return (
@@ -12,6 +14,14 @@ const HomeScreen = () => {
 
             {/* Overview Section */}
             <OverviewSection />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {/* Past 7 Days Data */}
+                <PastSevenDaysData />
+
+                {/* Recent Transactions */}
+                <RecentTransactions />
+            </div>
         </div>
     );
 };
