@@ -20,6 +20,7 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart";
+import { generateBlueChartPalette } from "@/lib/utils";
 // export const description = "A simple pie chart";
 // const chartData = [
 //     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
@@ -56,31 +57,33 @@ import {
 // } satisfies ChartConfig;
 
 // Function to generate random color for pie slices
-const generateRandomColor = () => {
-    const letters = "0123456789ABCDEF";
-    let color = "#";
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-};
+// const generateRandomColor = () => {
+//     const letters = "0123456789ABCDEF";
+//     let color = "#";
+//     for (let i = 0; i < 6; i++) {
+//         color += letters[Math.floor(Math.random() * 16)];
+//     }
+//     return color;
+// };
 
 // Function to generate chart data from expense by category data
 const generateChartData = (data: ExpenseByCategoryType[]) => {
+    const blueColors = generateBlueChartPalette(data.length);
     return data.map((item) => ({
         name: item.category_name,
         value: item.total_expense,
-        fill: generateRandomColor(),
+        fill: blueColors[data.indexOf(item)],
     }));
 };
 
 // Function to generate chart config from expense by category data
 const generateChartConfig = (data: ExpenseByCategoryType[]) => {
+    const blueColors = generateBlueChartPalette(data.length);
     const config: ChartConfig = {};
     data.forEach((item) => {
         config[item.category_name] = {
             label: item.category_name,
-            color: generateRandomColor(),
+            color: blueColors[data.indexOf(item)],
         };
     });
     return config;
