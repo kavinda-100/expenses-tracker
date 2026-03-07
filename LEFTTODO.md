@@ -36,4 +36,11 @@
     - [x] add a overview section to display total income, total expenses, and net balance.
     - [x] add a recent transactions section to display the recent transactions with filters.
     - [x] add a last 7 days transactions section to display the transactions of last 7 days.
-- [ ] Implement the report screen in the frontend (React).
+- [x] Implement the report screen in the frontend (React).
+    - [x] add a pie charts to display the expense/income distribution by category for the current month.
+    - [x] add a bar charts to display the monthly and yearly income and expenses overview.
+    - [x] add a area charts to display the monthly and yearly spending habits.
+- [x] Implement the settings screen in the frontend (React).
+    - [x] add a theme selection option (light, dark).
+    - [x] add a currency selection option.
+    - [x] add a data clear option with a confirmation dialog to clear all data (transactions, categories, budgets).

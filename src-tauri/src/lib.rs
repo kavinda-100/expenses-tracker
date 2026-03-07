@@ -11,8 +11,7 @@ use crate::{
             get_dashboard_overview, get_past_seven_days_data, get_recent_transactions,
         },
         report_controller::{
-            get_expense_by_category, get_last_month_habits, get_last_year_habits,
-            get_monthly_overview, get_yearly_overview,
+            get_expense_by_category, get_income_by_category, get_last_month_habits, get_last_year_habits, get_monthly_overview, get_yearly_overview
         },
         settings_controller::clear_all_data_from_database,
         transaction_controller::{
@@ -76,6 +75,7 @@ pub fn run() {
             get_past_seven_days_data,
             get_recent_transactions,
             get_expense_by_category,
+            get_income_by_category,
             get_monthly_overview,
             get_yearly_overview,
             get_last_month_habits,

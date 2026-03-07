@@ -10,6 +10,11 @@ import {
 } from "@/components/ui/dialog";
 import React from "react";
 import { Button } from "@/components/ui/button";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const DeleteTransactionCell = ({
     transactionId,
@@ -30,14 +35,25 @@ const DeleteTransactionCell = ({
     return (
         <div className="flex justify-center">
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" disabled={isDeleting}>
-                        {isDeleting ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <TrashIcon className="h-4 w-4 text-destructive" />
-                        )}
-                    </Button>
+                <DialogTrigger>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <TrashIcon className="h-4 w-4 text-destructive" />
+                                )}
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Delete this transaction.</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
