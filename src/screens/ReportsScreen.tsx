@@ -1,6 +1,7 @@
 import ScreenHeader from "@/components/ScreenHeader";
 import GetExpenseByCategory from "@/sections/report/GetExpenseByCategory";
 import GetIncomeByCategory from "@/sections/report/GetIncomeByCategory";
+import MonthlyOverview from "@/sections/report/MonthlyOverview";
 
 const ReportsScreen = () => {
     return (
@@ -18,6 +19,9 @@ const ReportsScreen = () => {
                 {/* Income Overview */}
                 <GetIncomeByCategory />
             </div>
+
+            {/* monthly overview */}
+            <MonthlyOverview />
         </div>
     );
 };

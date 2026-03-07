@@ -23,3 +23,17 @@ export const IncomeByCategoryZodSchema = z.object({
 });
 
 export type IncomeByCategoryType = z.infer<typeof IncomeByCategoryZodSchema>;
+
+// pub struct MonthlyOverviewResponseDto {
+//     pub day: u8,
+//     pub total_income: f64,
+//     pub total_expenses: f64,
+// }
+
+export const MonthlyOverviewZodSchema = z.object({
+    day: z.number(),
+    total_income: z.number(),
+    total_expenses: z.number(),
+});
+
+export type MonthlyOverviewType = z.infer<typeof MonthlyOverviewZodSchema>;

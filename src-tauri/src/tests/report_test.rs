@@ -222,14 +222,31 @@ mod report_test {
             overview.is_ok(),
             "Should successfully get monthly overview for February 2026"
         );
-        let overview = overview.unwrap();
+        let overview_data = overview.unwrap();
 
         assert!(
-            overview.total_income > 0.0,
+            !overview_data.is_empty(),
+            "Should have at least one day of data for February 2026"
+        );
+        
+        // Check that days are in valid range (1-28/29/30/31)
+        for day_data in &overview_data {
+            assert!(
+                day_data.day >= 1 && day_data.day <= 31,
+                "Day should be between 1 and 31"
+            );
+        }
+        
+        // Check that total income and expenses are calculated
+        let total_income: f64 = overview_data.iter().map(|d| d.total_income).sum();
+        let total_expenses: f64 = overview_data.iter().map(|d| d.total_expenses).sum();
+        
+        assert!(
+            total_income > 0.0,
             "Should have total income for February 2026"
         );
         assert!(
-            overview.total_expenses > 0.0,
+            total_expenses > 0.0,
             "Should have total expenses for February 2026"
         );
 
