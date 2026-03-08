@@ -35,7 +35,7 @@ const chartConfig = {
 // Helper function to convert month number to month string (e.g., 0 -> "January", 1 -> "February", etc.)
 const convertNumberToMonth = (month: number) => {
     const year = new Date().getFullYear(); // get current year
-    const date = new Date(year, month); // create a date object with the given month and current year
+    const date = new Date(year, month - 1); // create a date object with the given month and current year
     // return the month name as a string (e.g., "January", "February", etc.)
     return Intl.DateTimeFormat("en-US", { month: "short" }).format(date);
 };

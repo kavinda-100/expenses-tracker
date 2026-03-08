@@ -44,3 +44,5 @@
     - [x] add a theme selection option (light, dark).
     - [x] add a currency selection option.
     - [x] add a data clear option with a confirmation dialog to clear all data (transactions, categories, budgets).
+    - [x] fixed some UI/UX issues in the settings screen.
+    - [x] fixed some issue in the report screen. (Show incorrect month for yearly overview chart.)
