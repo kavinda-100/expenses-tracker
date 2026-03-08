@@ -24,10 +24,16 @@ import {
 import { useTauriMutation } from "@/hooks/useTauriMutation";
 import ErrorMessageBox from "@/components/ErrorMessageBox";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+
+const deleteMatchWordRequired = "delete_all_data";
 
 const ClearData = () => {
     const [open, setOpen] = React.useState(false);
     const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
+    const [deleteMatchWord, setDeleteMatchWord] = React.useState<string | null>(
+        null,
+    );
     // Tauri mutation to clear all data
     const {
         data: clearDataMutationData,
@@ -57,6 +63,17 @@ const ClearData = () => {
 
     // Handler for clearing all data
     const handleClearData = async () => {
+        // if no input or input doesn't match, do not proceed
+        if (!deleteMatchWord) {
+            // You can show an error message or toast here indicating the need for confirmation
+            return;
+        }
+        // Validate the confirmation input
+        if (deleteMatchWord !== deleteMatchWordRequired) {
+            // You can show an error message or toast here indicating the mismatch
+            return;
+        }
+        // Call the Tauri command to clear all data
         await clearDataMutationAsync("clear_all_data_from_database");
     };
 
@@ -147,6 +164,20 @@ const ClearData = () => {
                             </ul>
                         </CardContent>
                     </Card>
+                    {/* Delete Confirmation input */}
+                    <div className="my-3 w-full flex flex-col gap-3">
+                        <p className="text-xs text-muted-foreground">
+                            Please type this word to confirm:{" "}
+                            <span className="font-mono bg-muted px-1 rounded">
+                                {deleteMatchWordRequired}
+                            </span>
+                        </p>
+                        <Input
+                            placeholder={`Type ${deleteMatchWordRequired} to confirm`}
+                            value={deleteMatchWord || ""}
+                            onChange={(e) => setDeleteMatchWord(e.target.value)}
+                        />
+                    </div>
 
                     {/* Error message */}
                     {clearDataMutationIsError && (
@@ -173,7 +204,10 @@ const ClearData = () => {
                         <Button
                             variant="destructive"
                             onClick={handleClearData}
-                            disabled={clearDataMutationLoading}
+                            disabled={
+                                clearDataMutationLoading ||
+                                deleteMatchWord !== deleteMatchWordRequired
+                            }
                             className={cn(
                                 "flex-1 sm:flex-none gap-2",
                                 clearDataMutationLoading && "opacity-50",

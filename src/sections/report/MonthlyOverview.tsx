@@ -37,8 +37,8 @@ const convertNumberToDay = (day: number) => {
     const month = new Date().getMonth(); // get current month
     const year = new Date().getFullYear(); // get current year
     const date = new Date(year, month, day); // create a date object with the given day, current month and year
-    // return the day of the week as a string (e.g., "Monday", "Tuesday", etc.)
-    return Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date);
+    // return the day of the week as a string (e.g., "1-Monday", "2-Tuesday", etc.)
+    return `${day}-${Intl.DateTimeFormat("en-US", { weekday: "short" }).format(date)}`;
 };
 
 const MonthlyOverview = () => {
